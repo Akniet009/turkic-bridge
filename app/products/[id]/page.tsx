@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -16,12 +17,26 @@ import {
   Calendar,
   Share2,
   Percent,
+  Box,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { AppStore } from '@/lib/store';
 import { Product } from '@/lib/types';
 import { useTranslation } from '@/lib/i18n/context';
 import { formatUsd, formatKzt, convertUsdToKzt, calculateOrderSummary } from '@/lib/currency';
 import { EscrowBadge, VerifiedBadge, CommissionBadge } from '@/components/ui/TrustBadges';
+
+const Textile3DViewer = dynamic(
+  () => import('@/components/three/Textile3DViewer').then((m) => m.Textile3DViewer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[420px] rounded-2xl border border-slate-200 bg-slate-100 animate-pulse flex items-center justify-center text-xs text-slate-400">
+        Загрузка 3D-модели...
+      </div>
+    ),
+  }
+);
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -32,6 +47,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | undefined>(undefined);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [orderQuantity, setOrderQuantity] = useState(50);
+  const [viewMode, setViewMode] = useState<'photo' | '3d'>('photo');
 
   useEffect(() => {
     if (productId) {
@@ -84,40 +100,90 @@ export default function ProductDetailPage() {
       </nav>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-        {/* LEFT: Photo Gallery */}
+        {/* LEFT: Photo Gallery + 3D Preview Toggle */}
         <div className="lg:col-span-7 space-y-4">
-          <div className="relative h-80 sm:h-[480px] rounded-2xl overflow-hidden bg-slate-100 border border-slate-200">
-            <Image
-              src={product.images[activeImageIdx] || product.images[0]}
-              alt={title}
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 60vw"
-              className="object-cover"
-            />
-            <div className="absolute top-4 left-4 flex gap-2">
-              <span className="bg-brand-navy/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm">
-                MOQ: {product.moq} шт
-              </span>
-              {supplier?.verified && <VerifiedBadge />}
-            </div>
+          <div className="inline-flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => setViewMode('photo')}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all ${
+                viewMode === 'photo' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              <ImageIcon className="w-3.5 h-3.5" />
+              <span>Фотографии</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('3d')}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all ${
+                viewMode === '3d' ? 'bg-slate-900 text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Box className="w-3.5 h-3.5 text-teal-500" />
+              <span>3D-модель с текстурой</span>
+            </button>
           </div>
 
-          {/* Thumbnails */}
-          {product.images.length > 1 && (
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {product.images.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveImageIdx(i)}
-                  className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
-                    activeImageIdx === i ? 'border-brand-navy scale-95' : 'border-transparent opacity-70 hover:opacity-100'
-                  }`}
-                >
-                  <Image src={img} alt={`thumb-${i}`} fill className="object-cover" />
-                </button>
-              ))}
-            </div>
+          {viewMode === '3d' ? (
+            <Textile3DViewer
+              compact
+              initialModel={
+                product.category === 'bedding'
+                  ? 'bed'
+                  : product.category === 'plaids'
+                  ? 'sofa'
+                  : product.category === 'fabrics'
+                  ? 'drape'
+                  : 'chair'
+              }
+              initialWeave={
+                product.category === 'bedding'
+                  ? 'satin'
+                  : product.category === 'plaids'
+                  ? 'boucle'
+                  : product.category === 'fabrics'
+                  ? 'jacquard'
+                  : 'velvet'
+              }
+              initialColorId="ecru"
+            />
+          ) : (
+            <>
+              <div className="relative h-80 sm:h-[480px] rounded-2xl overflow-hidden bg-slate-100 border border-slate-200">
+                <Image
+                  src={product.images[activeImageIdx] || product.images[0]}
+                  alt={title}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  className="object-cover"
+                />
+                <div className="absolute top-4 left-4 flex gap-2">
+                  <span className="bg-slate-900/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm">
+                    MOQ: {product.moq} шт
+                  </span>
+                  {supplier?.verified && <VerifiedBadge />}
+                </div>
+              </div>
+
+              {/* Thumbnails */}
+              {product.images.length > 1 && (
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {product.images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveImageIdx(i)}
+                      className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
+                        activeImageIdx === i ? 'border-slate-900 scale-95' : 'border-transparent opacity-70 hover:opacity-100'
+                      }`}
+                    >
+                      <Image src={img} alt={`thumb-${i}`} fill className="object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
           )}
 
           {/* Detailed Specifications and Description */}

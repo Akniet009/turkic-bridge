@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import {
   ArrowRight,
@@ -22,6 +23,18 @@ import { useTranslation } from '@/lib/i18n/context';
 import { AppStore } from '@/lib/store';
 import { ProductCard } from '@/components/catalog/ProductCard';
 import { ProductCategory } from '@/lib/types';
+
+const Textile3DViewer = dynamic(
+  () => import('@/components/three/Textile3DViewer').then((m) => m.Textile3DViewer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[440px] rounded-2xl border border-slate-200 bg-slate-100 animate-pulse flex items-center justify-center text-xs text-slate-400">
+        Загрузка 3D-студии текстиля...
+      </div>
+    ),
+  }
+);
 
 export default function HomePage() {
   const { language, t } = useTranslation();
@@ -168,6 +181,32 @@ export default function HomePage() {
             <ProductCard key={p.id} product={p} />
           ))}
         </div>
+      </section>
+
+      {/* INTERACTIVE 3D TEXTILE & FURNITURE STUDIO */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-2">
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-md">
+              Интерактивный 3D-шоурум
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-950 tracking-tight mt-2">
+              3D-примерка турецких тканей на мебели
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Покрутите 3D-модели дивана, кресла, кровати и драпировки — оцените фактуру рогожки, бархата, букле и жаккарда в реальном времени
+            </p>
+          </div>
+          <Link
+            href="/showroom"
+            className="text-xs font-semibold text-teal-700 hover:text-teal-800 flex items-center gap-1 self-start sm:self-auto"
+          >
+            <span>Открыть полную 3D-студию</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <Textile3DViewer initialModel="sofa" initialWeave="velvet" initialColorId="emerald" />
       </section>
 
       {/* HOW IT WORKS - 4 Minimalist Steps */}

@@ -46,6 +46,7 @@ export function Header() {
 
   const navLinks: { href: string; label: string; icon: any }[] = [
     { href: '/catalog', label: t.nav.catalog, icon: ShoppingBag },
+    { href: '/showroom', label: '3D Студия', icon: Sparkles },
     { href: '/orders', label: t.nav.orders, icon: ShoppingBag },
     { href: '/chat', label: t.nav.chat, icon: MessageSquare },
   ];
