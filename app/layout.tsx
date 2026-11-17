@@ -1,15 +1,34 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Manrope, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { LanguageProvider } from '@/lib/i18n/context';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 
-const inter = Inter({ subsets: ['latin', 'cyrillic'] });
+const inter = Inter({
+  subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const manrope = Manrope({
+  subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'],
+  weight: ['500', '600', '700', '800'],
+  variable: '--font-manrope',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['500', '600', '700'],
+  variable: '--font-mono',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-  title: 'Тюркский мост — Оптовый маркетплейс турецкого текстиля в Казахстан',
-  description: 'Прямые оптовые поставки текстиля от фабрик Турции (Денизли, Бурса, Стамбул) в Казахстан. Автоматический перевод чата, безопасная сделка в тенге, 5% комиссия.',
+  title: 'Тюркский мост — B2B-платформа турецкого текстиля в Казахстан',
+  description:
+    'Прямые оптовые поставки текстиля от фабрик Турции (Денизли, Бурса, Стамбул) в Казахстан. 3D-просмотр фактур, ИИ-перевод чата, безопасная сделка Escrow.',
 };
 
 export default function RootLayout({
@@ -18,13 +37,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru">
-      <body className={`${inter.className} bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased`}>
+    <html
+      lang="ru"
+      className={`${inter.variable} ${manrope.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="font-sans bg-[#F9FAFB] text-[#0B1120] min-h-screen flex flex-col antialiased">
         <LanguageProvider>
           <Header />
-          <main className="flex-1">
-            {children}
-          </main>
+          <main className="flex-1">{children}</main>
           <Footer />
         </LanguageProvider>
       </body>

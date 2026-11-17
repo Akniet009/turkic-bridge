@@ -4,21 +4,19 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Lock, Mail, Building2, User, Phone, MapPin, ArrowRight, ShieldCheck, ShoppingBag, Factory, Globe } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/context';
-import { AppStore } from '@/lib/store';
 import { UserRole } from '@/lib/types';
+import { BrandLogoMark } from '@/components/ui/Icons';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { t } = useTranslation();
   const [role, setRole] = useState<'buyer' | 'supplier'>('buyer');
   const [name, setName] = useState('');
   const [company, setCompany] = useState('');
-  const [city, setCity] = useState(role === 'buyer' ? 'Алматы' : 'Денизли');
-  const [phone, setPhone] = useState(role === 'buyer' ? '+7 (701) 555-01-23' : '+90 (258) 299-12-34');
+  const [city, setCity] = useState('Алматы');
+  const [phone, setPhone] = useState('+7 (701) 555-01-23');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [language, setLanguage] = useState<'ru' | 'tr' | 'kk'>(role === 'buyer' ? 'ru' : 'tr');
+  const [language, setLanguage] = useState<'ru' | 'tr' | 'kk'>('ru');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRoleChange = (newRole: 'buyer' | 'supplier') => {
@@ -50,7 +48,6 @@ export default function RegisterPage() {
       language,
     };
 
-    // Save active profile in localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem('tb_current_profile', JSON.stringify(newProfile));
       localStorage.setItem('tb_current_role', role);
@@ -64,17 +61,17 @@ export default function RegisterPage() {
       } else {
         router.push('/catalog');
       }
-    }, 400);
+    }, 350);
   };
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-lg w-full p-6 sm:p-8 space-y-6">
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-elevated max-w-lg w-full p-6 sm:p-8 space-y-6">
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-xl bg-brand-navy text-brand-accent flex items-center justify-center font-extrabold text-xl mx-auto">
-            TB
+          <div className="flex justify-center">
+            <BrandLogoMark className="w-12 h-12" />
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-900">Регистрация в «Тюркском мосте»</h1>
+          <h1 className="font-display text-2xl font-extrabold text-[#0B1120]">Регистрация в «Тюркском мосте»</h1>
           <p className="text-xs text-slate-500">
             Прямой оптовый доступ между фабриками Турции и розницей Казахстана
           </p>
@@ -82,36 +79,32 @@ export default function RegisterPage() {
 
         {/* Role toggle */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5">Ваша роль на платформе</label>
-          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl text-xs font-bold">
+          <label className="block text-xs font-semibold text-slate-700 mb-1.5">Ваша роль на платформе</label>
+          <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-xl text-xs font-semibold">
             <button
               type="button"
               onClick={() => handleRoleChange('buyer')}
               className={`py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 transition-all ${
-                role === 'buyer'
-                  ? 'bg-white text-brand-navy shadow-sm'
-                  : 'text-slate-500 hover:text-slate-800'
+                role === 'buyer' ? 'bg-white text-[#0B1120] shadow-2xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              <ShoppingBag className="w-4 h-4 text-brand-accent" />
+              <ShoppingBag className={`w-4 h-4 ${role === 'buyer' ? 'text-teal-600' : 'text-slate-400'}`} />
               <div className="text-left">
                 <div className="leading-tight">Покупатель</div>
-                <div className="text-[10px] text-slate-400 font-normal">Казахстан (Магазин/Сеть)</div>
+                <div className="text-[10px] text-slate-400 font-normal">Казахстан (Магазин)</div>
               </div>
             </button>
             <button
               type="button"
               onClick={() => handleRoleChange('supplier')}
               className={`py-2.5 px-3 rounded-lg flex items-center justify-center gap-2 transition-all ${
-                role === 'supplier'
-                  ? 'bg-white text-brand-navy shadow-sm'
-                  : 'text-slate-500 hover:text-slate-800'
+                role === 'supplier' ? 'bg-white text-[#0B1120] shadow-2xs' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              <Factory className="w-4 h-4 text-brand-accent" />
+              <Factory className={`w-4 h-4 ${role === 'supplier' ? 'text-teal-600' : 'text-slate-400'}`} />
               <div className="text-left">
                 <div className="leading-tight">Поставщик</div>
-                <div className="text-[10px] text-slate-400 font-normal">Турция (Производитель)</div>
+                <div className="text-[10px] text-slate-400 font-normal">Турция (Фабрика)</div>
               </div>
             </button>
           </div>
@@ -120,8 +113,8 @@ export default function RegisterPage() {
         <form onSubmit={handleRegister} className="space-y-3.5 text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-bold text-slate-700 mb-1">
-                {role === 'buyer' ? 'Название компании / Магазина' : 'Название фабрики (Турция)'}
+              <label className="block font-semibold text-slate-700 mb-1">
+                {role === 'buyer' ? 'Название компании' : 'Название фабрики (TR)'}
               </label>
               <div className="relative">
                 <Building2 className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
@@ -131,13 +124,13 @@ export default function RegisterPage() {
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder={role === 'buyer' ? 'ТОО «Silk Trade»' : 'Denizli Jakar Ltd'}
                   required
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Контактное лицо</label>
+              <label className="block font-semibold text-slate-700 mb-1">Контактное лицо</label>
               <div className="relative">
                 <User className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
                 <input
@@ -146,7 +139,7 @@ export default function RegisterPage() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Айбек Нурланов"
                   required
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
             </div>
@@ -154,7 +147,7 @@ export default function RegisterPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-bold text-slate-700 mb-1">
+              <label className="block font-semibold text-slate-700 mb-1">
                 {role === 'buyer' ? 'Город (Казахстан)' : 'Город фабрики (Турция)'}
               </label>
               <div className="relative">
@@ -163,7 +156,7 @@ export default function RegisterPage() {
                   <select
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 font-medium bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                    className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
                     <option value="Алматы">Алматы</option>
                     <option value="Астана">Астана</option>
@@ -175,7 +168,7 @@ export default function RegisterPage() {
                   <select
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 font-medium bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                    className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
                     <option value="Денизли">Денизли (Текстильный кластер)</option>
                     <option value="Бурса">Бурса (Шёлк и жаккард)</option>
@@ -188,7 +181,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Телефон WhatsApp</label>
+              <label className="block font-semibold text-slate-700 mb-1">Телефон WhatsApp</label>
               <div className="relative">
                 <Phone className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
                 <input
@@ -197,7 +190,7 @@ export default function RegisterPage() {
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+7 (701) 000-00-00"
                   required
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                  className="font-mono w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
             </div>
@@ -205,7 +198,7 @@ export default function RegisterPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Рабочий Email</label>
+              <label className="block font-semibold text-slate-700 mb-1">Рабочий Email</label>
               <div className="relative">
                 <Mail className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
                 <input
@@ -214,13 +207,13 @@ export default function RegisterPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="contact@company.com"
                   required
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Пароль</label>
+              <label className="block font-semibold text-slate-700 mb-1">Пароль</label>
               <div className="relative">
                 <Lock className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
                 <input
@@ -230,20 +223,20 @@ export default function RegisterPage() {
                   placeholder="••••••••"
                   required
                   minLength={6}
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
             </div>
           </div>
 
           <div>
-            <label className="block font-bold text-slate-700 mb-1">Основной язык общения</label>
+            <label className="block font-semibold text-slate-700 mb-1">Основной язык общения</label>
             <div className="relative">
               <Globe className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
               <select
                 value={language}
-                onChange={(e) => setLanguage(e.target.value as any)}
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 font-medium bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                onChange={(e) => setLanguage(e.target.value as 'ru' | 'tr' | 'kk')}
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 font-medium bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
                 <option value="ru">Русский (язык по умолчанию в РК)</option>
                 <option value="tr">Türkçe (ana dil - Türkiye)</option>
@@ -251,7 +244,7 @@ export default function RegisterPage() {
               </select>
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
-              * Встроенный ИИ-переводчик автоматически переводит сообщения и спецификации на этот язык
+              * ИИ-переводчик автоматически переводит сообщения и спецификации на этот язык
             </p>
           </div>
 
@@ -259,16 +252,16 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3 bg-brand-navy hover:bg-slate-800 text-brand-accent font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg disabled:opacity-50"
+              className="w-full py-3 bg-[#0B1120] hover:bg-slate-800 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-2xs disabled:opacity-50"
             >
               <span>{isSubmitting ? 'Создание профиля...' : 'Зарегистрироваться'}</span>
-              <ArrowRight className="w-4 h-4 text-brand-accent" />
+              <ArrowRight className="w-4 h-4 text-teal-400" />
             </button>
           </div>
         </form>
 
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-start gap-2.5 text-[11px] text-slate-600">
-          <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+        <div className="bg-[#F9FAFB] border border-slate-200/80 rounded-xl p-3 flex items-start gap-2.5 text-[11px] text-slate-600">
+          <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
           <span>
             Турецкие поставщики проходят обязательную проверку сертификатов и инспекцию фабрики модераторами платформы.
           </span>
@@ -276,7 +269,7 @@ export default function RegisterPage() {
 
         <div className="text-center text-xs text-slate-500">
           Уже есть аккаунт?{' '}
-          <Link href="/login" className="text-brand-navy font-bold hover:underline">
+          <Link href="/login" className="text-[#0B1120] hover:text-teal-700 font-semibold hover:underline">
             Войти
           </Link>
         </div>

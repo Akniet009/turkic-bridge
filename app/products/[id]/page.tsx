@@ -64,7 +64,7 @@ export default function ProductDetailPage() {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center space-y-4">
         <h2 className="text-2xl font-bold text-slate-800">Товар не найден</h2>
-        <Link href="/catalog" className="inline-block py-2 px-5 bg-brand-navy text-white rounded-xl text-sm font-semibold">
+        <Link href="/catalog" className="inline-block py-2.5 px-5 bg-[#0B1120] text-white rounded-xl text-sm font-semibold">
           Вернуться в каталог
         </Link>
       </div>
@@ -94,9 +94,9 @@ export default function ProductDetailPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12">
       {/* Breadcrumbs */}
       <nav className="text-xs text-slate-500 flex items-center gap-2">
-        <Link href="/" className="hover:text-brand-navy">Главная</Link>
+        <Link href="/" className="hover:text-[#0B1120]">Главная</Link>
         <span>/</span>
-        <Link href="/catalog" className="hover:text-brand-navy">Каталог</Link>
+        <Link href="/catalog" className="hover:text-[#0B1120]">Каталог</Link>
         <span>/</span>
         <span className="text-slate-900 font-semibold truncate max-w-xs">{title}</span>
       </nav>
@@ -181,24 +181,24 @@ export default function ProductDetailPage() {
           )}
 
           {/* Detailed Specifications and Description */}
-          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 space-y-6 mt-6">
-            <h3 className="text-lg font-bold text-slate-900">Описание и характеристики ткани</h3>
+          <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200/80 space-y-6 mt-6 shadow-2xs">
+            <h3 className="font-display text-lg font-bold text-[#0B1120]">Описание и характеристики ткани</h3>
             <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
               {desc}
             </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-100 text-xs">
-              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+              <div className="bg-[#F9FAFB] p-3.5 rounded-xl border border-slate-200/60">
                 <span className="text-slate-400 block mb-1">Состав материала</span>
-                <strong className="text-slate-800 text-sm">{product.composition || '100% Эгейский хлопок'}</strong>
+                <strong className="text-[#0B1120] text-sm font-semibold">{product.composition || '100% Эгейский хлопок'}</strong>
               </div>
-              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+              <div className="bg-[#F9FAFB] p-3.5 rounded-xl border border-slate-200/60">
                 <span className="text-slate-400 block mb-1">Плотность полотна</span>
-                <strong className="text-slate-800 text-sm">{product.density_gsm ? `${product.density_gsm} г/м²` : 'Высокая плотность'}</strong>
+                <strong className="font-mono tabular-nums text-[#0B1120] text-sm font-semibold">{product.density_gsm ? `${product.density_gsm} г/м²` : 'Высокая плотность'}</strong>
               </div>
-              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
-                <span className="text-slate-400 block mb-1">Срок производства партии</span>
-                <strong className="text-slate-800 text-sm">{product.lead_time_days} рабочих дней</strong>
+              <div className="bg-[#F9FAFB] p-3.5 rounded-xl border border-slate-200/60">
+                <span className="text-slate-400 block mb-1">Срок производства</span>
+                <strong className="font-mono tabular-nums text-[#0B1120] text-sm font-semibold">{product.lead_time_days} дней</strong>
               </div>
             </div>
           </div>
@@ -206,42 +206,42 @@ export default function ProductDetailPage() {
 
         {/* RIGHT: Ordering & Supplier Box (Sticky) */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200 shadow-lg space-y-6">
+          <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200/80 shadow-card space-y-6">
             <div>
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-2.5">
                 <EscrowBadge />
                 <CommissionBadge />
               </div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug">
+              <h1 className="font-display text-xl sm:text-2xl font-extrabold text-[#0B1120] leading-snug">
                 {title}
               </h1>
             </div>
 
             {/* Price Box */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-baseline justify-between">
+            <div className="p-4 rounded-xl bg-[#F9FAFB] border border-slate-200/80 flex items-baseline justify-between">
               <div>
-                <span className="text-xs font-semibold text-slate-400 block uppercase tracking-wider">
-                  Оптовая цена за единицу:
+                <span className="text-[11px] font-semibold text-slate-400 block uppercase tracking-wider">
+                  Оптовая цена за единицу
                 </span>
                 <div className="flex items-baseline gap-2 mt-0.5">
-                  <span className="text-3xl font-extrabold text-brand-navy">
+                  <span className="font-display tabular-nums text-3xl font-extrabold text-[#0B1120]">
                     {formatUsd(product.price_usd)}
                   </span>
-                  <span className="text-sm font-semibold text-slate-500">
+                  <span className="font-mono tabular-nums text-sm font-semibold text-slate-500">
                     ≈ {formatKzt(convertUsdToKzt(product.price_usd))}
                   </span>
                 </div>
               </div>
-              <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded-md">
-                Фабричная цена
+              <span className="text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-semibold px-2.5 py-0.5 rounded-full">
+                Прямая цена
               </span>
             </div>
 
             {/* Quantity Selector / Calculator */}
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               <div className="flex items-center justify-between text-xs">
-                <label className="font-bold text-slate-700">Количество для заказа:</label>
-                <span className="text-slate-500">Минимум: <strong>{product.moq} шт</strong></span>
+                <label className="font-semibold text-slate-700">Количество для заказа:</label>
+                <span className="text-slate-500">Минимум: <strong className="font-mono text-[#0B1120]">{product.moq} шт</strong></span>
               </div>
               <div className="flex items-center gap-3">
                 <input
@@ -250,68 +250,68 @@ export default function ProductDetailPage() {
                   step={5}
                   value={orderQuantity}
                   onChange={(e) => setOrderQuantity(Math.max(product.moq, parseInt(e.target.value) || product.moq))}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-300 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-accent text-center text-lg"
+                  className="font-mono tabular-nums w-full px-4 py-3 rounded-xl border border-slate-200 font-bold text-[#0B1120] focus:outline-none focus:ring-2 focus:ring-teal-500 text-center text-lg bg-white"
                 />
               </div>
 
               {/* Live estimation summary */}
-              <div className="pt-3 border-t border-slate-100 text-xs space-y-1.5 text-slate-600">
+              <div className="pt-3 border-t border-slate-100 text-xs space-y-2 text-slate-600">
                 <div className="flex justify-between">
                   <span>Стоимость партии ({orderQuantity} шт):</span>
-                  <span className="font-bold text-slate-900">{formatUsd(subtotalUsd)}</span>
+                  <span className="font-mono tabular-nums font-bold text-[#0B1120]">{formatUsd(subtotalUsd)}</span>
                 </div>
-                <div className="flex justify-between text-brand-navy font-semibold">
+                <div className="flex justify-between text-slate-700 font-medium">
                   <span>Комиссия платформы (5%):</span>
-                  <span>{formatUsd(summary.commissionUsd)}</span>
+                  <span className="font-mono tabular-nums">{formatUsd(summary.commissionUsd)}</span>
                 </div>
-                <div className="flex justify-between pt-1 border-t border-slate-200 text-sm font-bold text-slate-900">
-                  <span>Итого к оплате (в тенге):</span>
-                  <span className="text-brand-navy text-base">{formatKzt(summary.totalKzt)}</span>
+                <div className="flex justify-between pt-2 border-t border-slate-200/80 text-sm font-bold text-[#0B1120]">
+                  <span>Итого в тенге:</span>
+                  <span className="font-mono tabular-nums text-base text-teal-700">{formatKzt(summary.totalKzt)}</span>
                 </div>
               </div>
             </div>
 
             {/* CTAs */}
-            <div className="space-y-2.5 pt-2">
+            <div className="space-y-2.5 pt-1">
               <Link
                 href={`/checkout/${product.id}?qty=${orderQuantity}`}
-                className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-brand-navy hover:bg-brand-blue text-white font-bold text-sm shadow-md transition-all"
+                className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-[#0B1120] hover:bg-slate-800 text-white font-semibold text-sm shadow-2xs transition-all"
               >
                 <span>Оформить безопасную сделку</span>
-                <ArrowRight className="w-4 h-4 text-brand-accent" />
+                <ArrowRight className="w-4 h-4 text-teal-400" />
               </Link>
 
               <Link
                 href={`/chat?supplierId=${product.supplier_id}&productId=${product.id}`}
-                className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl border border-slate-300 hover:border-brand-navy text-slate-800 text-sm font-semibold hover:bg-slate-50 transition-all"
+                className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-800 text-sm font-semibold hover:bg-slate-50 transition-all"
               >
-                <MessageSquare className="w-4 h-4 text-brand-blue" />
-                <span>Написать поставщику в чат (с ИИ-переводом)</span>
+                <MessageSquare className="w-4 h-4 text-teal-600" />
+                <span>Написать поставщику в чат</span>
               </Link>
             </div>
 
             {/* Escrow Guarantee Note */}
-            <div className="p-3.5 rounded-xl bg-cyan-50/50 border border-cyan-100 flex items-start gap-3 text-xs text-cyan-900">
-              <ShieldCheck className="w-5 h-5 text-brand-accent shrink-0 mt-0.5" />
-              <p>
-                <strong>Гарантия возврата 100%:</strong> Деньги блокируются на эскроу-счете и будут отправлены фабрике в Турцию только после того, как вы подтвердите качество и приемку партии в Казахстане.
+            <div className="p-3.5 rounded-xl bg-teal-50/60 border border-teal-200/70 flex items-start gap-3 text-xs text-teal-950">
+              <ShieldCheck className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
+              <p className="leading-relaxed">
+                <strong>Гарантия возврата 100%:</strong> Деньги блокируются на эскроу-счете и поступают фабрике только после приемки партии в Казахстане.
               </p>
             </div>
           </div>
 
           {/* Supplier Profile Card */}
           {supplier && (
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-4">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200/80 space-y-4 shadow-2xs">
               <div className="flex items-start justify-between">
                 <div>
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                     Производитель
                   </span>
-                  <Link href={`/suppliers/${supplier.id}`} className="font-extrabold text-base text-slate-900 hover:text-brand-blue block mt-0.5">
+                  <Link href={`/suppliers/${supplier.id}`} className="font-display font-bold text-base text-[#0B1120] hover:text-teal-700 block mt-0.5 transition-colors">
                     {supplier.factory_name}
                   </Link>
                   <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
-                    <MapPin className="w-3.5 h-3.5 text-brand-accent" />
+                    <MapPin className="w-3.5 h-3.5 text-teal-600" />
                     <span>{supplier.city}, Türkiye</span>
                   </div>
                 </div>
@@ -323,8 +323,8 @@ export default function ProductDetailPage() {
               </p>
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-xs font-bold text-emerald-600">★ {supplier.rating} Оценка надежности</span>
-                <Link href={`/suppliers/${supplier.id}`} className="text-xs font-bold text-brand-navy hover:text-brand-blue flex items-center gap-1">
+                <span className="font-mono text-xs font-bold text-emerald-700">★ {supplier.rating} Рейтинг</span>
+                <Link href={`/suppliers/${supplier.id}`} className="text-xs font-semibold text-[#0B1120] hover:text-teal-700 flex items-center gap-1 transition-colors">
                   <span>Все товары фабрики</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>

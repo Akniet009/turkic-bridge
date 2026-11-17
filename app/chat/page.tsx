@@ -162,20 +162,20 @@ function ChatContent() {
                   key={c.id}
                   onClick={() => setActiveConvId(c.id)}
                   className={`w-full text-left p-3.5 flex items-start gap-3 transition-colors ${
-                    active ? 'bg-white shadow-sm font-semibold' : 'hover:bg-slate-100/70'
+                    active ? 'bg-white shadow-2xs font-semibold border-l-2 border-[#0B1120]' : 'hover:bg-slate-100/70'
                   }`}
                 >
-                  <div className="w-10 h-10 rounded-xl bg-brand-navy text-white flex items-center justify-center shrink-0 font-bold text-sm">
+                  <div className="w-10 h-10 rounded-xl bg-[#0B1120] text-teal-400 flex items-center justify-center shrink-0 font-display font-bold text-sm">
                     {c.supplier?.factory_name[0] || 'T'}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-900 truncate">
+                      <span className="font-display text-xs font-bold text-[#0B1120] truncate">
                         {c.supplier?.factory_name}
                       </span>
                       {lastMsg && (
-                        <span className="text-[10px] text-slate-400">
+                        <span className="font-mono text-[10px] text-slate-400">
                           {new Date(lastMsg.created_at).toLocaleTimeString('ru-RU', {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -206,19 +206,22 @@ function ChatContent() {
           {activeConversation ? (
             <>
               {/* Conversation Top Header */}
-              <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
+              <div className="p-4 border-b border-slate-200/80 flex items-center justify-between bg-white shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-brand-navy/10 text-brand-navy flex items-center justify-center font-bold">
-                    <Building2 className="w-5 h-5 text-brand-navy" />
+                  <div className="w-10 h-10 rounded-xl bg-teal-50 ring-1 ring-teal-500/20 text-teal-700 flex items-center justify-center">
+                    <Building2 className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-slate-900 text-sm">
+                    <h3 className="font-display font-bold text-[#0B1120] text-sm">
                       {activeConversation.supplier?.factory_name}
                     </h3>
                     <div className="text-xs text-slate-500 flex items-center gap-2">
                       <span>{activeConversation.supplier?.city}, Türkiye</span>
                       <span>•</span>
-                      <span className="text-emerald-600 font-semibold">Онлайн</span>
+                      <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        Онлайн
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -226,9 +229,9 @@ function ChatContent() {
                 {activeConversation.product && (
                   <Link
                     href={`/products/${activeConversation.product.id}`}
-                    className="hidden sm:flex items-center gap-2 text-xs font-bold text-brand-navy bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-lg hover:bg-slate-100"
+                    className="hidden sm:flex items-center gap-2 text-xs font-semibold text-[#0B1120] bg-[#F9FAFB] border border-slate-200/80 py-1.5 px-3 rounded-xl hover:bg-slate-100 transition-colors"
                   >
-                    <Package className="w-3.5 h-3.5 text-brand-accent" />
+                    <Package className="w-3.5 h-3.5 text-teal-600" />
                     <span className="truncate max-w-[180px]">{activeConversation.product.title_ru}</span>
                   </Link>
                 )}
@@ -318,7 +321,7 @@ function ChatContent() {
 
                 {isTranslating && (
                   <div className="flex items-center gap-2 text-xs text-slate-400 italic">
-                    <Sparkles className="w-3.5 h-3.5 text-brand-accent animate-spin" />
+                    <Sparkles className="w-3.5 h-3.5 text-teal-500 animate-spin" />
                     <span>ИИ переводит сообщение на язык фабрики...</span>
                   </div>
                 )}
@@ -329,12 +332,12 @@ function ChatContent() {
               {attachmentUrl && (
                 <div className="p-2 px-4 bg-slate-100 border-t border-slate-200 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4 text-brand-navy" />
+                    <ImageIcon className="w-4 h-4 text-[#0B1120]" />
                     <span className="font-semibold text-slate-700">Фото прикреплено к сообщению</span>
                   </div>
                   <button
                     onClick={() => setAttachmentUrl(null)}
-                    className="text-rose-600 hover:text-rose-800 font-bold"
+                    className="text-rose-600 hover:text-rose-800 font-semibold"
                   >
                     Удалить
                   </button>
@@ -342,12 +345,12 @@ function ChatContent() {
               )}
 
               {/* Bottom Input Form */}
-              <form onSubmit={handleSendMessage} className="p-3.5 border-t border-slate-200 bg-white flex items-center gap-2 shrink-0">
+              <form onSubmit={handleSendMessage} className="p-3.5 border-t border-slate-200/80 bg-white flex items-center gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={handleSamplePhotoAttachment}
                   title="Прикрепить образец ткани / фото"
-                  className="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-brand-navy transition-colors shrink-0"
+                  className="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-[#0B1120] transition-colors shrink-0"
                 >
                   <Paperclip className="w-4 h-4" />
                 </button>
@@ -357,16 +360,16 @@ function ChatContent() {
                   value={messageText}
                   onChange={(e) => setMessageText(e.target.value)}
                   placeholder={t.chat.placeholder}
-                  className="flex-1 px-4 py-3 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent font-medium"
+                  className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium"
                 />
 
                 <button
                   type="submit"
                   disabled={isTranslating || (!messageText.trim() && !attachmentUrl)}
-                  className="py-3 px-5 rounded-xl bg-brand-navy hover:bg-brand-blue disabled:opacity-40 text-white font-bold text-xs sm:text-sm transition-all flex items-center gap-1.5 shrink-0"
+                  className="py-3 px-5 rounded-xl bg-[#0B1120] hover:bg-slate-800 disabled:opacity-40 text-white font-semibold text-xs sm:text-sm transition-all flex items-center gap-1.5 shrink-0"
                 >
                   <span>{t.chat.send}</span>
-                  <Send className="w-3.5 h-3.5 text-brand-accent" />
+                  <Send className="w-3.5 h-3.5 text-teal-400" />
                 </button>
               </form>
             </>

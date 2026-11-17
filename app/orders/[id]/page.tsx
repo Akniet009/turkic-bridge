@@ -57,7 +57,7 @@ export default function OrderDetailPage() {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
         <h2 className="text-xl font-bold text-slate-800">Заказ не найден</h2>
-        <Link href="/orders" className="inline-block py-2 px-5 bg-brand-navy text-white rounded-xl text-sm font-semibold">
+        <Link href="/orders" className="inline-block py-2 px-5 bg-[#0B1120] text-white rounded-xl text-sm font-semibold">
           Вернуться к заказам
         </Link>
       </div>
@@ -90,7 +90,7 @@ export default function OrderDetailPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
       {/* Breadcrumbs */}
       <nav className="text-xs text-slate-500 flex items-center gap-2">
-        <Link href="/" className="hover:text-brand-navy">Главная</Link>
+        <Link href="/" className="hover:text-[#0B1120]">Главная</Link>
         <span>/</span>
         <Link href="/orders" className="hover:text-slate-900">Мои заказы</Link>
         <span>/</span>
@@ -169,14 +169,14 @@ export default function OrderDetailPage() {
 
         {/* Action card for Escrow payment if status is new or accepted */}
         {(order.status === 'new' || order.status === 'accepted_by_supplier') && (
-          <div className="p-6 rounded-2xl bg-gradient-to-r from-brand-navy to-brand-blue text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+          <div className="p-6 rounded-2xl bg-[#0B1120] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-elevated">
             <div className="space-y-1.5 text-center sm:text-left">
-              <div className="flex items-center justify-center sm:justify-start gap-2 text-brand-accent text-xs font-bold uppercase tracking-wider">
+              <div className="flex items-center justify-center sm:justify-start gap-2 text-teal-400 text-xs font-bold uppercase tracking-wider">
                 <Lock className="w-4 h-4" />
                 <span>Ожидает блокировки средств в Escrow</span>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold">
-                Внесите оплату: {formatKzt(order.total_kzt)} ({formatUsd(order.total_usd)})
+              <h3 className="font-display text-lg sm:text-xl font-bold">
+                Внесите оплату: <span className="font-mono tabular-nums">{formatKzt(order.total_kzt)}</span> ({formatUsd(order.total_usd)})
               </h3>
               <p className="text-xs text-slate-300 max-w-xl">
                 Деньги замораживаются на защищенном счете. Фабрика в Турции получит оплату только после того, как вы примете товар на складе в Казахстане.
@@ -185,7 +185,7 @@ export default function OrderDetailPage() {
 
             <button
               onClick={() => setPaymentModalOpen(true)}
-              className="py-3.5 px-8 rounded-xl bg-brand-accent hover:bg-brand-accentHover text-brand-navy font-black text-sm shadow-lg shadow-brand-accent/30 transition-all shrink-0"
+              className="py-3.5 px-7 rounded-xl bg-teal-500 hover:bg-teal-400 text-[#0B1120] font-bold text-sm shadow-2xs transition-all shrink-0"
             >
               Оплатить в тенге (Escrow)
             </button>
@@ -270,36 +270,36 @@ export default function OrderDetailPage() {
           <div className="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600">
             <div className="flex justify-between">
               <span>Сумма товаров:</span>
-              <strong className="text-slate-900">{formatUsd(order.subtotal_usd)}</strong>
+              <strong className="font-mono tabular-nums text-[#0B1120]">{formatUsd(order.subtotal_usd)}</strong>
             </div>
-            <div className="flex justify-between text-brand-navy font-semibold">
+            <div className="flex justify-between text-[#0B1120] font-semibold">
               <span>Комиссия платформы (5%):</span>
-              <span>{formatUsd(order.commission_usd)}</span>
+              <span className="font-mono tabular-nums">{formatUsd(order.commission_usd)}</span>
             </div>
             <div className="flex justify-between">
               <span>Международная доставка:</span>
-              <strong className="text-slate-900">{formatUsd(order.delivery_usd)}</strong>
+              <strong className="font-mono tabular-nums text-[#0B1120]">{formatUsd(order.delivery_usd)}</strong>
             </div>
-            <div className="flex justify-between pt-2 border-t border-slate-200 text-sm font-extrabold text-slate-900">
+            <div className="flex justify-between pt-2 border-t border-slate-200/80 text-sm font-extrabold text-[#0B1120]">
               <span>Итого:</span>
-              <span className="text-brand-navy">{formatUsd(order.total_usd)} ({formatKzt(order.total_kzt)})</span>
+              <span className="font-mono tabular-nums text-teal-700">{formatUsd(order.total_usd)} ({formatKzt(order.total_kzt)})</span>
             </div>
           </div>
         </div>
 
         {/* Right: Delivery Address & Event Logs */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-            <h3 className="font-extrabold text-slate-900 text-sm pb-2 border-b border-slate-100 flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-brand-navy" />
+          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-2xs space-y-3">
+            <h3 className="font-display font-bold text-[#0B1120] text-sm pb-2 border-b border-slate-100 flex items-center gap-1.5">
+              <MapPin className="w-4 h-4 text-teal-600" />
               <span>Адрес доставки в Казахстане</span>
             </h3>
 
-            <div className="text-xs text-slate-700 space-y-1">
+            <div className="text-xs text-slate-700 space-y-1.5">
               <div><strong>Город:</strong> {order.delivery_address.city}</div>
               <div><strong>Адрес:</strong> {order.delivery_address.street}, {order.delivery_address.building}</div>
               <div><strong>Получатель:</strong> {order.delivery_address.recipient_name}</div>
-              <div><strong>Телефон:</strong> {order.delivery_address.recipient_phone}</div>
+              <div><strong>Телефон:</strong> <span className="font-mono">{order.delivery_address.recipient_phone}</span></div>
               {order.notes && (
                 <div className="pt-2 text-slate-500 italic">
                   «{order.notes}»
@@ -309,17 +309,17 @@ export default function OrderDetailPage() {
           </div>
 
           {/* Event Logs */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-            <h3 className="font-extrabold text-slate-900 text-sm pb-2 border-b border-slate-100">
+          <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-2xs space-y-3">
+            <h3 className="font-display font-bold text-[#0B1120] text-sm pb-2 border-b border-slate-100">
               Журнал событий заказа
             </h3>
 
             <div className="space-y-3">
               {order.events?.map((ev) => (
-                <div key={ev.id} className="text-xs border-l-2 border-brand-accent pl-3 py-0.5 space-y-0.5">
+                <div key={ev.id} className="text-xs border-l-2 border-teal-500 pl-3 py-0.5 space-y-0.5">
                   <div className="flex items-center justify-between text-slate-400 text-[10px]">
-                    <span className="font-bold uppercase">{ev.status}</span>
-                    <span>{new Date(ev.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span className="font-mono font-bold uppercase">{ev.status}</span>
+                    <span className="font-mono">{new Date(ev.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
                   <div className="text-slate-700 font-medium">{ev.note}</div>
                 </div>
@@ -332,49 +332,49 @@ export default function OrderDetailPage() {
       {/* ESCROW PAYMENT MOCK MODAL */}
       {paymentModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-7 space-y-6 shadow-2xl border border-slate-200">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 sm:p-7 space-y-6 shadow-elevated border border-slate-200">
             <div className="text-center space-y-2">
-              <div className="w-14 h-14 rounded-2xl bg-brand-navy/10 text-brand-navy flex items-center justify-center mx-auto">
-                <ShieldCheck className="w-8 h-8 text-brand-accent" />
+              <div className="w-14 h-14 rounded-2xl bg-teal-50 ring-1 ring-teal-500/20 text-teal-600 flex items-center justify-center mx-auto">
+                <ShieldCheck className="w-7 h-7" />
               </div>
-              <h3 className="text-xl font-extrabold text-slate-900">
+              <h3 className="font-display text-xl font-extrabold text-[#0B1120]">
                 Безопасная сделка (Эскроу)
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="font-mono text-xs text-slate-500">
                 Заказ № {order.order_number}
               </p>
             </div>
 
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-2">
+            <div className="bg-[#F9FAFB] p-4 rounded-xl border border-slate-200/80 text-xs space-y-2">
               <div className="flex justify-between">
                 <span className="text-slate-500">Сумма в тенге:</span>
-                <span className="text-base font-black text-brand-navy">{formatKzt(order.total_kzt)}</span>
+                <span className="font-display tabular-nums text-base font-black text-[#0B1120]">{formatKzt(order.total_kzt)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Эквивалент:</span>
-                <span className="font-bold text-slate-800">{formatUsd(order.total_usd)}</span>
+                <span className="font-mono tabular-nums font-bold text-slate-800">{formatUsd(order.total_usd)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Комиссия сервиса 5%:</span>
-                <span className="font-bold text-emerald-600">{formatUsd(order.commission_usd)} (включена)</span>
+                <span className="font-mono tabular-nums font-bold text-emerald-700">{formatUsd(order.commission_usd)} (включена)</span>
               </div>
             </div>
 
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 leading-relaxed">
-              <strong>Имитация платежа (MVP):</strong> Нажмите «Подтвердить оплату», чтобы заблокировать средства в Эскроу и перевести статус заказа в <code>paid_in_escrow</code>.
+            <div className="p-3 bg-amber-50/80 border border-amber-200/80 rounded-xl text-xs text-amber-900 leading-relaxed">
+              <strong>Имитация платежа (MVP):</strong> Нажмите «Подтвердить оплату», чтобы заблокировать средства в Эскроу и перевести статус заказа в <code className="font-mono">paid_in_escrow</code>.
             </div>
 
             <div className="space-y-2.5">
               <button
                 onClick={handlePayEscrow}
                 disabled={isProcessingPayment}
-                className="w-full py-3.5 px-4 rounded-xl bg-brand-navy hover:bg-brand-blue text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-4 rounded-xl bg-[#0B1120] hover:bg-slate-800 text-white font-semibold text-sm shadow-2xs transition-all flex items-center justify-center gap-2"
               >
                 {isProcessingPayment ? (
                   <span>Блокировка средств в Escrow...</span>
                 ) : (
                   <>
-                    <CreditCard className="w-4 h-4 text-brand-accent" />
+                    <CreditCard className="w-4 h-4 text-teal-400" />
                     <span>Подтвердить оплату {formatKzt(order.total_kzt)}</span>
                   </>
                 )}
@@ -383,7 +383,7 @@ export default function OrderDetailPage() {
               <button
                 onClick={() => setPaymentModalOpen(false)}
                 disabled={isProcessingPayment}
-                className="w-full py-2.5 text-xs text-slate-500 hover:text-slate-800 font-semibold"
+                className="w-full py-2.5 text-xs text-slate-500 hover:text-slate-900 font-semibold"
               >
                 Отмена
               </button>

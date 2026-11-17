@@ -155,31 +155,31 @@ export default function SupplierDashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
       {/* Top Banner */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-brand-navy text-white flex items-center justify-center font-bold text-xl">
-            <Factory className="w-7 h-7 text-brand-accent" />
+          <div className="w-14 h-14 rounded-2xl bg-[#0B1120] text-white flex items-center justify-center shadow-card shrink-0">
+            <Factory className="w-6 h-6 text-teal-400" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
+              <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-2.5 py-0.5 rounded-full">
                 Верифицированная фабрика
               </span>
-              <span className="text-xs text-slate-400">ID: {supplier.id.slice(0, 8)}</span>
+              <span className="font-mono text-[11px] text-slate-400">ID: {supplier.id.slice(0, 8)}</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-slate-900 mt-1">
+            <h1 className="font-display text-xl sm:text-2xl font-extrabold text-[#0B1120] mt-1">
               Кабинет производителя: {supplier.factory_name}
             </h1>
-            <p className="text-xs text-slate-500">{supplier.city}, Türkiye • Управление товарами и заказами в РК</p>
+            <p className="text-xs text-slate-500 mt-0.5">{supplier.city}, Türkiye • Управление товарами и заказами в РК</p>
           </div>
         </div>
 
         {/* Tab Controls */}
-        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold self-start sm:self-auto">
+        <div className="flex bg-slate-100/90 p-1 rounded-xl border border-slate-200/70 text-xs font-semibold self-start sm:self-auto">
           <button
             onClick={() => setActiveTab('orders')}
             className={`py-2 px-4 rounded-lg transition-all ${
-              activeTab === 'orders' ? 'bg-white text-brand-navy shadow-sm' : 'text-slate-600 hover:text-brand-navy'
+              activeTab === 'orders' ? 'bg-white text-[#0B1120] shadow-2xs' : 'text-slate-600 hover:text-[#0B1120]'
             }`}
           >
             Входящие заказы ({orders.length})
@@ -187,7 +187,7 @@ export default function SupplierDashboardPage() {
           <button
             onClick={() => setActiveTab('products')}
             className={`py-2 px-4 rounded-lg transition-all ${
-              activeTab === 'products' ? 'bg-white text-brand-navy shadow-sm' : 'text-slate-600 hover:text-brand-navy'
+              activeTab === 'products' ? 'bg-white text-[#0B1120] shadow-2xs' : 'text-slate-600 hover:text-[#0B1120]'
             }`}
           >
             Товары ({products.length})
@@ -195,17 +195,17 @@ export default function SupplierDashboardPage() {
           <button
             onClick={() => setActiveTab('new-product')}
             className={`py-2 px-4 rounded-lg transition-all flex items-center gap-1.5 ${
-              activeTab === 'new-product' ? 'bg-brand-navy text-white shadow-sm' : 'text-slate-600 hover:text-brand-navy'
+              activeTab === 'new-product' ? 'bg-[#0B1120] text-white shadow-2xs' : 'text-slate-600 hover:text-[#0B1120]'
             }`}
           >
-            <Plus className="w-3.5 h-3.5 text-brand-accent" />
+            <Plus className="w-3.5 h-3.5 text-teal-400" />
             <span>Добавить товар</span>
           </button>
         </div>
       </div>
 
       {successToast && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2 animate-fadeIn">
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{successToast}</span>
         </div>
@@ -214,24 +214,24 @@ export default function SupplierDashboardPage() {
       {/* TAB 1: INCOMING ORDERS */}
       {activeTab === 'orders' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between pb-2">
-            <h2 className="text-lg font-bold text-slate-900">Поступившие оптовые заявки из Казахстана</h2>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-1 gap-2">
+            <h2 className="font-display text-lg font-extrabold text-[#0B1120]">Поступившие оптовые заявки из Казахстана</h2>
             <span className="text-xs text-slate-400">Комиссия сервиса 5% удерживается автоматически при выплате</span>
           </div>
 
           {orders.length === 0 ? (
-            <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center text-slate-400 text-xs">
+            <div className="bg-white p-12 rounded-2xl border border-slate-200/80 text-center text-slate-400 text-xs">
               Входящих заказов пока нет.
             </div>
           ) : (
             orders.map((order) => (
               <div
                 key={order.id}
-                className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6"
+                className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-6"
               >
                 <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <span className="font-extrabold text-base text-brand-navy">{order.order_number}</span>
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <span className="font-mono font-bold text-sm sm:text-base text-[#0B1120]">{order.order_number}</span>
                     {getStatusBadge(order.status, t.orders.statuses[order.status] || order.status)}
                     <span className="text-xs text-slate-400">
                       {new Date(order.created_at).toLocaleDateString('ru-RU')}
@@ -243,22 +243,22 @@ export default function SupplierDashboardPage() {
                   </div>
 
                   <div className="text-xs text-slate-500">
-                    Позиция: <strong>{order.items?.[0]?.quantity} шт</strong> • {order.items?.[0]?.product?.title_ru}
+                    Позиция: <strong className="font-mono text-[#0B1120]">{order.items?.[0]?.quantity} шт</strong> • {order.items?.[0]?.product?.title_ru}
                   </div>
                 </div>
 
                 {/* Status Switcher for Supplier */}
                 <div className="flex flex-col md:items-end gap-3 border-t md:border-t-0 pt-4 md:pt-0 border-slate-100">
-                  <div className="text-right">
-                    <span className="text-xs text-slate-400 block font-medium">Сумма заказа:</span>
-                    <span className="text-lg font-black text-brand-navy">{formatUsd(order.total_usd)}</span>
+                  <div className="md:text-right">
+                    <span className="text-[11px] text-slate-400 block font-medium">Сумма заказа:</span>
+                    <span className="font-display tabular-nums text-lg font-black text-[#0B1120]">{formatUsd(order.total_usd)}</span>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
                     {order.status === 'new' && (
                       <button
                         onClick={() => handleStatusChange(order.id, 'accepted_by_supplier')}
-                        className="py-1.5 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold"
+                        className="py-1.5 px-3 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold transition-colors"
                       >
                         Принять заказ ✓
                       </button>
@@ -266,23 +266,23 @@ export default function SupplierDashboardPage() {
                     {order.status === 'paid_in_escrow' && (
                       <button
                         onClick={() => handleStatusChange(order.id, 'in_production')}
-                        className="py-1.5 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold"
+                        className="py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors"
                       >
-                        Запустить пошив (в производство) →
+                        Запустить пошив →
                       </button>
                     )}
                     {order.status === 'in_production' && (
                       <button
                         onClick={() => handleStatusChange(order.id, 'shipped')}
-                        className="py-1.5 px-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold"
+                        className="py-1.5 px-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold transition-colors"
                       >
-                        Отгрузить перевозчику в РК →
+                        Отгрузить в РК →
                       </button>
                     )}
 
                     <Link
                       href={`/orders/${order.id}`}
-                      className="py-1.5 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold"
+                      className="py-1.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors"
                     >
                       Детали заказа
                     </Link>
@@ -297,35 +297,35 @@ export default function SupplierDashboardPage() {
       {/* TAB 2: MY PRODUCTS */}
       {activeTab === 'products' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between pb-2">
-            <h2 className="text-lg font-bold text-slate-900">Товары фабрики ({products.length})</h2>
+          <div className="flex items-center justify-between pb-1">
+            <h2 className="font-display text-lg font-extrabold text-[#0B1120]">Товары фабрики ({products.length})</h2>
             <button
               onClick={() => setActiveTab('new-product')}
-              className="py-2 px-4 rounded-xl bg-brand-navy text-white text-xs font-bold hover:bg-brand-blue flex items-center gap-1.5"
+              className="py-2 px-4 rounded-xl bg-[#0B1120] text-white text-xs font-semibold hover:bg-slate-800 flex items-center gap-1.5 shadow-2xs transition-colors"
             >
-              <Plus className="w-3.5 h-3.5 text-brand-accent" />
+              <Plus className="w-3.5 h-3.5 text-teal-400" />
               <span>Добавить новый товар</span>
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((p) => (
-              <div key={p.id} className="bg-white rounded-2xl border border-slate-200 p-4 space-y-3 shadow-sm">
+              <div key={p.id} className="bg-white rounded-2xl border border-slate-200/80 p-4 space-y-3 shadow-2xs">
                 <div className="relative h-44 rounded-xl overflow-hidden bg-slate-100">
                   <Image src={p.images[0]} alt={p.title_ru} fill className="object-cover" />
-                  <span className="absolute top-2 left-2 bg-brand-navy text-white text-[10px] font-bold px-2 py-0.5 rounded">
+                  <span className="font-mono absolute top-2.5 left-2.5 bg-[#0B1120]/85 text-white text-[10px] font-semibold px-2.5 py-0.5 rounded-full backdrop-blur-sm">
                     MOQ: {p.moq} шт
                   </span>
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm truncate">{p.title_ru}</h4>
-                  <p className="text-xs text-slate-400 truncate">{p.title_tr}</p>
+                  <h4 className="font-display font-bold text-[#0B1120] text-sm truncate">{p.title_ru}</h4>
+                  <p className="text-xs text-slate-400 truncate mt-0.5">{p.title_tr}</p>
                 </div>
 
-                <div className="flex justify-between items-baseline pt-2 border-t border-slate-100">
-                  <span className="text-lg font-extrabold text-brand-navy">{formatUsd(p.price_usd)}</span>
-                  <span className="text-xs text-slate-500">{p.lead_time_days} дн. производство</span>
+                <div className="flex justify-between items-baseline pt-2.5 border-t border-slate-100">
+                  <span className="font-display tabular-nums text-lg font-extrabold text-[#0B1120]">{formatUsd(p.price_usd)}</span>
+                  <span className="font-mono text-xs text-slate-500">{p.lead_time_days} дн. пошив</span>
                 </div>
               </div>
             ))}
@@ -335,64 +335,64 @@ export default function SupplierDashboardPage() {
 
       {/* TAB 3: ADD NEW PRODUCT WITH AI AUTO-TRANSLATE */}
       {activeTab === 'new-product' && (
-        <form onSubmit={handleCreateProduct} className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <form onSubmit={handleCreateProduct} className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200/80 shadow-2xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
             <div>
-              <h2 className="text-lg font-extrabold text-slate-900">Добавление оптовой позиции</h2>
-              <p className="text-xs text-slate-500">Заполните поля на турецком или русском — ИИ автоматически сделает перевод на 3 языка</p>
+              <h2 className="font-display text-lg font-extrabold text-[#0B1120]">Добавление оптовой позиции</h2>
+              <p className="text-xs text-slate-500 mt-0.5">Заполните поля на турецком или русском — ИИ автоматически сделает перевод на 3 языка</p>
             </div>
 
             <button
               type="button"
               onClick={handleAutoTranslate}
               disabled={isTranslating}
-              className="py-2.5 px-4 rounded-xl bg-brand-accent/20 hover:bg-brand-accent/30 text-brand-navy font-bold text-xs flex items-center gap-1.5 transition-all border border-brand-accent/40"
+              className="py-2.5 px-4 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 font-semibold text-xs flex items-center gap-1.5 transition-all border border-teal-200/80 shrink-0"
             >
-              <Sparkles className="w-4 h-4 text-brand-accent" />
+              <Sparkles className="w-4 h-4 text-teal-600" />
               <span>{isTranslating ? 'Переводим через ИИ...' : 'Автоперевод на 3 языка (TR/RU/KK)'}</span>
             </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Название на турецком (TR) *</label>
+              <label className="block font-semibold text-slate-700 mb-1.5">Название на турецком (TR) *</label>
               <input
                 type="text"
                 value={titleTr}
                 onChange={(e) => setTitleTr(e.target.value)}
                 placeholder="Örn: %100 Pamuk Saten Nevresim"
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-accent focus:outline-none"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
                 required
               />
             </div>
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Название на русском (RU) *</label>
+              <label className="block font-semibold text-slate-700 mb-1.5">Название на русском (RU) *</label>
               <input
                 type="text"
                 value={titleRu}
                 onChange={(e) => setTitleRu(e.target.value)}
                 placeholder="Напр: Сатиновое постельное белье"
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-accent focus:outline-none"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Название на казахском (KK)</label>
+              <label className="block font-semibold text-slate-700 mb-1.5">Название на казахском (KK)</label>
               <input
                 type="text"
                 value={titleKk}
                 onChange={(e) => setTitleKk(e.target.value)}
                 placeholder="Мысалы: Сатин төсек-орын жиынтығы"
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-accent focus:outline-none"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>
 
             <div className="sm:col-span-3 grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Категория</label>
+                <label className="block font-semibold text-slate-700 mb-1.5">Категория</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value as ProductCategory)}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-accent focus:outline-none bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none bg-white"
                 >
                   <option value="bedding">Постельное бельё</option>
                   <option value="towels">Махровые полотенца</option>
@@ -403,94 +403,94 @@ export default function SupplierDashboardPage() {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Цена за ед. (USD) *</label>
+                <label className="block font-semibold text-slate-700 mb-1.5">Цена за ед. (USD) *</label>
                 <input
                   type="number"
                   step="0.1"
                   min="0.5"
                   value={priceUsd}
                   onChange={(e) => setPriceUsd(parseFloat(e.target.value) || 1)}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-brand-accent focus:outline-none"
+                  className="font-mono w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold focus:ring-2 focus:ring-teal-500 focus:outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Мин. заказ (MOQ шт) *</label>
+                <label className="block font-semibold text-slate-700 mb-1.5">Мин. заказ (MOQ шт) *</label>
                 <input
                   type="number"
                   min="1"
                   value={moq}
                   onChange={(e) => setMoq(parseInt(e.target.value) || 1)}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-brand-accent focus:outline-none"
+                  className="font-mono w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold focus:ring-2 focus:ring-teal-500 focus:outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Срок производства (дней) *</label>
+                <label className="block font-semibold text-slate-700 mb-1.5">Срок производства (дн) *</label>
                 <input
                   type="number"
                   min="1"
                   value={leadTime}
                   onChange={(e) => setLeadTime(parseInt(e.target.value) || 1)}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-bold focus:ring-2 focus:ring-brand-accent focus:outline-none"
+                  className="font-mono w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-bold focus:ring-2 focus:ring-teal-500 focus:outline-none"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Состав ткани</label>
+              <label className="block font-semibold text-slate-700 mb-1.5">Состав ткани</label>
               <input
                 type="text"
                 value={composition}
                 onChange={(e) => setComposition(e.target.value)}
                 placeholder="100% Эгейский хлопок, Сатин 300TC"
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-accent focus:outline-none"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Плотность (г/м²)</label>
+              <label className="block font-semibold text-slate-700 mb-1.5">Плотность (г/м²)</label>
               <input
                 type="number"
                 value={densityGsm}
                 onChange={(e) => setDensityGsm(parseInt(e.target.value) || 100)}
                 placeholder="550"
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-accent focus:outline-none"
+                className="font-mono w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">URL фотографии образца</label>
+              <label className="block font-semibold text-slate-700 mb-1.5">URL фотографии образца</label>
               <input
                 type="url"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-accent focus:outline-none"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>
 
             <div className="sm:col-span-3">
-              <label className="block font-bold text-slate-700 mb-1">Описание на турецком (TR)</label>
+              <label className="block font-semibold text-slate-700 mb-1.5">Описание на турецком (TR)</label>
               <textarea
                 rows={2}
                 value={descTr}
                 onChange={(e) => setDescTr(e.target.value)}
                 placeholder="Ürün özellikleri, iplik kalitesi ve ambalaj bilgileri..."
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-accent focus:outline-none"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>
 
             <div className="sm:col-span-3">
-              <label className="block font-bold text-slate-700 mb-1">Описание на русском (RU)</label>
+              <label className="block font-semibold text-slate-700 mb-1.5">Описание на русском (RU)</label>
               <textarea
                 rows={2}
                 value={descRu}
                 onChange={(e) => setDescRu(e.target.value)}
                 placeholder="Характеристики ткани, устойчивость к стиркам, сертификаты..."
-                className="w-full px-3 py-2 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-brand-accent focus:outline-none"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-medium focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>
           </div>
@@ -499,14 +499,14 @@ export default function SupplierDashboardPage() {
             <button
               type="button"
               onClick={() => setActiveTab('products')}
-              className="py-2.5 px-5 rounded-xl border border-slate-300 text-xs font-semibold hover:bg-slate-50"
+              className="py-2.5 px-5 rounded-xl border border-slate-200 text-xs font-semibold hover:bg-slate-50 transition-colors"
             >
               Отмена
             </button>
 
             <button
               type="submit"
-              className="py-2.5 px-6 rounded-xl bg-brand-navy hover:bg-brand-blue text-white text-xs font-bold shadow-md transition-all"
+              className="py-2.5 px-6 rounded-xl bg-[#0B1120] hover:bg-slate-800 text-white text-xs font-semibold shadow-2xs transition-all"
             >
               Сохранить и опубликовать в каталоге
             </button>
