@@ -2,12 +2,14 @@
 
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Search, RotateCcw, MapPin, Box } from 'lucide-react';
+import { Search, RotateCcw, MapPin, Box, ArrowUpDown } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/context';
 import { AppStore } from '@/lib/store';
 import { ProductCard } from '@/components/catalog/ProductCard';
 import { ProductCategory } from '@/lib/types';
 import { CategoryVectorIcon } from '@/components/ui/Icons';
+
+type SortOption = 'default' | 'price_asc' | 'moq_asc' | 'lead_asc';
 
 function CatalogContent() {
   const { t } = useTranslation();
@@ -19,12 +21,13 @@ function CatalogContent() {
   const [selectedCity, setSelectedCity] = useState<string>('all');
   const [maxMoq, setMaxMoq] = useState<number>(200);
   const [maxPrice, setMaxPrice] = useState<number>(50);
+  const [sortBy, setSortBy] = useState<SortOption>('default');
 
   useEffect(() => {
     const catParam = searchParams.get('category');
-    if (catParam) {
-      setSelectedCategory(catParam);
-    }
+    const qParam = searchParams.get('q');
+    if (catParam) setSelectedCategory(catParam);
+    if (qParam) setSearchQuery(qParam);
   }, [searchParams]);
 
   const categories: { id: ProductCategory | 'all'; label: string }[] = [
@@ -37,14 +40,14 @@ function CatalogContent() {
   ];
 
   const cities = [
-    { id: 'all', label: 'Все фабрики' },
+    { id: 'all', label: 'Все города' },
     { id: 'Денизли', label: 'Денизли' },
     { id: 'Бурса', label: 'Бурса' },
     { id: 'Стамбул', label: 'Стамбул' },
   ];
 
   const filteredProducts = useMemo(() => {
-    return products.filter((p) => {
+    const filtered = products.filter((p) => {
       if (selectedCategory !== 'all' && p.category !== selectedCategory) return false;
       if (selectedCity !== 'all' && p.supplier?.city !== selectedCity) return false;
       if (p.moq > maxMoq) return false;
@@ -67,7 +70,18 @@ function CatalogContent() {
 
       return true;
     });
-  }, [products, selectedCategory, selectedCity, maxMoq, maxPrice, searchQuery]);
+
+    if (sortBy === 'price_asc') {
+      return [...filtered].sort((a, b) => a.price_usd - b.price_usd);
+    }
+    if (sortBy === 'moq_asc') {
+      return [...filtered].sort((a, b) => a.moq - b.moq);
+    }
+    if (sortBy === 'lead_asc') {
+      return [...filtered].sort((a, b) => a.lead_time_days - b.lead_time_days);
+    }
+    return filtered;
+  }, [products, selectedCategory, selectedCity, maxMoq, maxPrice, searchQuery, sortBy]);
 
   const resetFilters = () => {
     setSearchQuery('');
@@ -75,6 +89,7 @@ function CatalogContent() {
     setSelectedCity('all');
     setMaxMoq(200);
     setMaxPrice(50);
+    setSortBy('default');
   };
 
   const hasActiveFilters =
@@ -85,157 +100,174 @@ function CatalogContent() {
     searchQuery.trim().length > 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6">
-      {/* Header & Search */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-5 border-b border-slate-200/80">
-        <div>
-          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0B1120]">
-            Оптовый каталог текстиля
-          </h1>
-          <div className="flex flex-wrap items-center gap-2 mt-1.5">
-            <p className="text-xs sm:text-sm text-slate-500">
-              Прямые цены турецких фабрик в USD и тенге с защитой Escrow
-            </p>
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-teal-800 bg-teal-50 border border-teal-200/80 px-2.5 py-0.5 rounded-full">
+    <div className="bg-[#F7F6F2] min-h-screen pb-20">
+      {/* Crisp Architectural Catalog Banner */}
+      <div className="bg-white border-b border-stone-200/80 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-5">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-teal-800 bg-teal-50 border border-teal-200/80 px-3 py-1 rounded-full mb-2.5">
               <Box className="w-3.5 h-3.5 text-teal-600" />
-              <span>Нажмите «3D» на любой картинке товара</span>
+              <span>Нажмите «3D» на любой картинке товара для осмотра фактуры</span>
+            </div>
+            <h1 className="font-display text-2xl sm:text-4xl font-extrabold text-[#0F172A]">
+              Оптовый каталог текстиля
+            </h1>
+            <p className="text-xs sm:text-sm text-stone-500 mt-1">
+              Прямые фабричные цены из Денизли, Бурсы и Стамбула с защитой оплаты в тенге
+            </p>
+          </div>
+
+          <div className="relative w-full md:w-88">
+            <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-stone-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Поиск по сатину, махре, хлопку..."
+              className="w-full pl-10 pr-4 py-3 rounded-2xl border border-stone-200/90 bg-[#F7F6F2] focus:bg-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium placeholder:text-stone-400 transition-all"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Filters & Products Grid Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
+        {/* Category Filter Pills with Custom Vector Icons */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {categories.map((cat) => {
+            const active = selectedCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all ${
+                  active
+                    ? 'bg-[#0F172A] text-white shadow-card'
+                    : 'bg-white border border-stone-200/80 text-stone-600 hover:text-[#0F172A] hover:border-stone-300'
+                }`}
+              >
+                <CategoryVectorIcon
+                  category={cat.id}
+                  className={`w-4 h-4 ${active ? 'text-teal-400' : 'text-stone-400'}`}
+                />
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* City, Range Sliders & Sort Controls */}
+        <div className="bg-white rounded-2xl border border-stone-200/80 p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-2xs">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs font-semibold text-stone-400 mr-1.5 flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-teal-600" />
+              <span>Фабрики:</span>
             </span>
+            {cities.map((city) => (
+              <button
+                key={city.id}
+                onClick={() => setSelectedCity(city.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                  selectedCity === city.id
+                    ? 'bg-teal-50 text-teal-800 ring-1 ring-teal-500/30'
+                    : 'text-stone-600 hover:bg-stone-50 hover:text-[#0F172A]'
+                }`}
+              >
+                {city.label}
+              </button>
+            ))}
           </div>
-        </div>
 
-        <div className="relative w-full md:w-80">
-          <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Поиск по сатину, махре, хлопку..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200/90 bg-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 font-medium placeholder:text-slate-400 shadow-2xs"
-          />
-        </div>
-      </div>
-
-      {/* Category Filter Pills with Custom Vector Icons */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-        {categories.map((cat) => {
-          const active = selectedCategory === cat.id;
-          return (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                active
-                  ? 'bg-[#0B1120] text-white shadow-card'
-                  : 'bg-white border border-slate-200/80 text-slate-600 hover:text-[#0B1120] hover:border-slate-300'
-              }`}
-            >
-              <CategoryVectorIcon
-                category={cat.id}
-                className={`w-4 h-4 ${active ? 'text-teal-400' : 'text-slate-400'}`}
+          <div className="flex items-center gap-5 flex-wrap text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-stone-500 font-medium">MOQ до:</span>
+              <input
+                type="range"
+                min="10"
+                max="200"
+                step="10"
+                value={maxMoq}
+                onChange={(e) => setMaxMoq(Number(e.target.value))}
+                className="accent-[#0F172A] w-20 sm:w-24 h-1.5 bg-stone-200 rounded-lg cursor-pointer"
               />
-              <span>{cat.label}</span>
-            </button>
-          );
-        })}
-      </div>
+              <span className="font-mono tabular-nums font-bold text-[#0F172A] min-w-[44px]">{maxMoq} шт</span>
+            </div>
 
-      {/* Filter Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xs">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs font-semibold text-slate-400 mr-1.5 flex items-center gap-1">
-            <MapPin className="w-3.5 h-3.5 text-teal-600" />
-            <span>Город:</span>
-          </span>
-          {cities.map((city) => (
-            <button
-              key={city.id}
-              onClick={() => setSelectedCity(city.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                selectedCity === city.id
-                  ? 'bg-teal-50 text-teal-800 ring-1 ring-teal-500/30'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
-              {city.label}
-            </button>
-          ))}
+            <div className="flex items-center gap-2">
+              <span className="text-stone-500 font-medium">До:</span>
+              <input
+                type="range"
+                min="5"
+                max="50"
+                step="1"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                className="accent-[#0F172A] w-20 sm:w-24 h-1.5 bg-stone-200 rounded-lg cursor-pointer"
+              />
+              <span className="font-mono tabular-nums font-bold text-[#0F172A] min-w-[34px]">${maxPrice}</span>
+            </div>
+
+            <div className="flex items-center gap-1.5 pl-2 border-l border-stone-200">
+              <ArrowUpDown className="w-3.5 h-3.5 text-stone-400" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
+                className="bg-transparent font-semibold text-[#0F172A] focus:outline-none cursor-pointer"
+              >
+                <option value="default">Рекомендуемые</option>
+                <option value="price_asc">Сначала дешевле</option>
+                <option value="moq_asc">Меньше MOQ</option>
+                <option value="lead_asc">Быстрее пошив</option>
+              </select>
+            </div>
+
+            {hasActiveFilters && (
+              <button
+                onClick={resetFilters}
+                className="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Сбросить</span>
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center gap-6 flex-wrap text-xs">
-          <div className="flex items-center gap-2.5">
-            <span className="text-slate-500 font-medium">Макс. MOQ:</span>
-            <input
-              type="range"
-              min="10"
-              max="200"
-              step="10"
-              value={maxMoq}
-              onChange={(e) => setMaxMoq(Number(e.target.value))}
-              className="accent-[#0B1120] w-24 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
-            />
-            <span className="font-mono tabular-nums font-bold text-[#0B1120] min-w-[48px]">{maxMoq} шт</span>
-          </div>
+        {/* Count Row */}
+        <div className="flex items-center justify-between text-xs text-stone-500">
+          <span>
+            Показано товаров:{' '}
+            <strong className="font-mono tabular-nums text-[#0F172A]">{filteredProducts.length}</strong>
+          </span>
+        </div>
 
-          <div className="flex items-center gap-2.5">
-            <span className="text-slate-500 font-medium">Цена до:</span>
-            <input
-              type="range"
-              min="5"
-              max="50"
-              step="1"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(Number(e.target.value))}
-              className="accent-[#0B1120] w-24 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
-            />
-            <span className="font-mono tabular-nums font-bold text-[#0B1120] min-w-[36px]">${maxPrice}</span>
+        {/* Grid */}
+        {filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
-
-          {hasActiveFilters && (
+        ) : (
+          <div className="bg-white rounded-3xl border border-stone-200/80 p-14 text-center space-y-3 shadow-2xs">
+            <p className="font-display text-base font-bold text-[#0F172A]">По вашим фильтрам ничего не найдено</p>
+            <p className="text-xs text-stone-500">Попробуйте расширить диапазон MOQ, цены или очистить поиск</p>
             <button
               onClick={resetFilters}
-              className="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1 ml-auto md:ml-0"
+              className="px-5 py-2.5 rounded-xl bg-[#0F172A] text-white text-xs font-semibold hover:bg-slate-800 transition-colors"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Сбросить</span>
+              Показать весь каталог
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-
-      {/* Results Count */}
-      <div className="flex items-center justify-between text-xs text-slate-500">
-        <span>
-          Найдено позиций:{' '}
-          <strong className="font-mono tabular-nums text-[#0B1120]">{filteredProducts.length}</strong>
-        </span>
-      </div>
-
-      {/* Products Grid */}
-      {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center space-y-3 shadow-2xs">
-          <p className="font-display text-sm font-bold text-slate-800">По вашим фильтрам ничего не найдено</p>
-          <p className="text-xs text-slate-500">Попробуйте увеличить максимальный MOQ или сбросить фильтры</p>
-          <button
-            onClick={resetFilters}
-            className="px-4 py-2 rounded-xl bg-[#0B1120] text-white text-xs font-semibold hover:bg-slate-800 transition-colors"
-          >
-            Показать все товары
-          </button>
-        </div>
-      )}
     </div>
   );
 }
 
 export default function CatalogPage() {
   return (
-    <Suspense fallback={<div className="max-w-7xl mx-auto p-12 text-center text-slate-400 text-xs">Загрузка каталога...</div>}>
+    <Suspense fallback={<div className="max-w-7xl mx-auto p-12 text-center text-stone-400 text-xs">Загрузка каталога...</div>}>
       <CatalogContent />
     </Suspense>
   );

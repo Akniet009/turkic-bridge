@@ -41,7 +41,7 @@ export default function RootLayout({
       lang="ru"
       className={`${inter.variable} ${manrope.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="font-sans bg-[#F9FAFB] text-[#0B1120] min-h-screen flex flex-col antialiased">
+      <body className="font-sans bg-[#F7F6F2] text-[#0F172A] min-h-screen flex flex-col antialiased">
         <LanguageProvider>
           <Header />
           <main className="flex-1">{children}</main>
