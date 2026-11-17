@@ -123,13 +123,13 @@ function ChatContent() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 h-[calc(100vh-140px)] min-h-[600px] flex flex-col">
       {/* Top bar info */}
-      <div className="flex items-center justify-between pb-4 border-b border-slate-200 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-brand-accent/20 text-brand-navy flex items-center justify-center font-bold">
-            <Sparkles className="w-4 h-4 text-brand-accent" />
+      <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center font-bold">
+            <Sparkles className="w-4 h-4" />
           </div>
           <div>
-            <h1 className="text-base sm:text-lg font-extrabold text-slate-900 leading-tight">
+            <h1 className="text-sm sm:text-base font-extrabold text-slate-950 leading-tight">
               B2B Чат с автоматическим ИИ-переводом
             </h1>
             <p className="text-[11px] text-slate-500">
@@ -139,7 +139,7 @@ function ChatContent() {
         </div>
 
         <div className="hidden sm:flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full text-xs text-slate-600 font-medium">
-          <Globe2 className="w-3.5 h-3.5 text-brand-blue" />
+          <Globe2 className="w-3.5 h-3.5 text-teal-600" />
           <span>Синхронизация TR ⇄ RU ⇄ KK</span>
         </div>
       </div>
@@ -251,10 +251,10 @@ function ChatContent() {
                       className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
                     >
                       <div
-                        className={`max-w-xl rounded-2xl p-4 space-y-2.5 shadow-sm text-xs ${
+                        className={`max-w-xl rounded-2xl p-4 space-y-2 shadow-2xs text-xs ${
                           isMine
-                            ? 'bg-brand-navy text-white rounded-tr-none'
-                            : 'bg-white text-slate-900 border border-slate-200 rounded-tl-none'
+                            ? 'bg-slate-900 text-white rounded-br-xs'
+                            : 'bg-white text-slate-900 border border-slate-200/80 rounded-bl-xs'
                         }`}
                       >
                         {/* Optional photo attachment */}
@@ -273,7 +273,7 @@ function ChatContent() {
                         <div>
                           <div
                             className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 flex items-center gap-1 ${
-                              isMine ? 'text-brand-accent' : 'text-slate-400'
+                              isMine ? 'text-teal-400' : 'text-slate-400'
                             }`}
                           >
                             <span>Оригинал ({msg.original_lang.toUpperCase()}):</span>
@@ -289,10 +289,10 @@ function ChatContent() {
                             className={`pt-2 border-t mt-1 text-[12px] leading-relaxed rounded-lg p-2.5 ${
                               isMine
                                 ? 'bg-white/10 border-white/15 text-slate-200'
-                                : 'bg-cyan-50/70 border-cyan-100 text-cyan-950 font-medium'
+                                : 'bg-teal-50/70 border-teal-100 text-teal-950 font-medium'
                             }`}
                           >
-                            <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider mb-1 text-brand-accent">
+                            <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider mb-1 text-teal-500">
                               <Sparkles className="w-3 h-3" />
                               <span>ИИ-перевод:</span>
                             </div>

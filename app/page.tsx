@@ -2,27 +2,29 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   ArrowRight,
   ShieldCheck,
   MessageSquare,
-  Percent,
-  CheckCircle2,
   Sparkles,
   ShoppingBag,
   Factory,
   Building2,
   MapPin,
   Truck,
+  CheckCircle2,
+  Clock,
+  Layers,
+  Percent,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/context';
 import { AppStore } from '@/lib/store';
 import { ProductCard } from '@/components/catalog/ProductCard';
-import { EscrowBadge, VerifiedBadge, CommissionBadge } from '@/components/ui/TrustBadges';
 import { ProductCategory } from '@/lib/types';
 
 export default function HomePage() {
-  const { t } = useTranslation();
+  const { language, t } = useTranslation();
   const [products] = useState(() => AppStore.getProducts().slice(0, 6));
   const [suppliers] = useState(() => AppStore.getSuppliers());
 
@@ -35,279 +37,254 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="space-y-16 sm:space-y-24 pb-16">
-      {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-brand-navy via-brand-navy to-brand-blue text-white pt-16 sm:pt-24 pb-20 sm:pb-32 px-4 sm:px-6 lg:px-8">
-        {/* Background decorative grid */}
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#00D4B2_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+    <div className="space-y-16 sm:space-y-24 pb-20 bg-[#FAFAFA] text-slate-900">
+      {/* HERO SECTION - Minimalist, Airy & Trustworthy */}
+      <section className="relative overflow-hidden pt-12 sm:pt-20 pb-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200/60 bg-white">
+        {/* Subtle ambient light */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-teal-50/40 via-slate-50/20 to-transparent pointer-events-none rounded-full blur-3xl -z-10" />
 
-        <div className="max-w-5xl mx-auto text-center relative z-10 space-y-6">
-          {/* Top trust badges */}
-          <div className="inline-flex flex-wrap items-center justify-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 text-xs font-semibold">
-            <span className="flex items-center gap-1.5 text-brand-accent">
-              <ShieldCheck className="w-4 h-4" />
-              <span>Безопасная сделка (Escrow)</span>
-            </span>
-            <span className="text-white/40">•</span>
-            <span className="flex items-center gap-1.5 text-emerald-300">
-              <Sparkles className="w-4 h-4" />
-              <span>Встроенный ИИ-переводчик TR ⇄ RU ⇄ KK</span>
-            </span>
-            <span className="text-white/40">•</span>
-            <span className="text-white">Комиссия 5%</span>
+        <div className="max-w-4xl mx-auto text-center space-y-6">
+          {/* Minimalist Top Tag */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200/80 text-xs font-semibold text-slate-700 shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+            <span>Оптовый B2B-мост</span>
+            <span className="text-slate-400">•</span>
+            <span className="text-teal-700 font-bold">Турция ⇄ Казахстан</span>
           </div>
 
-          {/* Heading */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+          {/* Headline */}
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-950 leading-[1.12]">
             {t.heroTitle}
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-xl text-slate-200 max-w-3xl mx-auto font-normal leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto font-normal leading-relaxed">
             {t.heroSubtitle}
           </p>
 
-          {/* Action Buttons: "Я покупатель" / "Я поставщик" */}
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-md mx-auto">
+          {/* Action Buttons */}
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
             <Link
               href="/catalog"
-              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-xl bg-brand-accent hover:bg-brand-accentHover text-brand-navy font-bold text-base shadow-lg shadow-brand-accent/25 transition-all transform hover:-translate-y-0.5"
+              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-sm transition-all transform hover:-translate-y-0.5"
             >
-              <ShoppingBag className="w-5 h-5 text-brand-navy" />
+              <ShoppingBag className="w-4 h-4 text-teal-400" />
               <span>{t.buyerCTA}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
             <Link
               href="/dashboard/supplier"
-              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 py-4 px-6 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/25 font-bold text-base backdrop-blur-md transition-all"
+              className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300/80 font-semibold text-sm shadow-2xs transition-all"
             >
-              <Factory className="w-5 h-5 text-brand-accent" />
+              <Factory className="w-4 h-4 text-teal-600" />
               <span>{t.supplierCTA}</span>
             </Link>
           </div>
 
-          {/* Key metrics */}
-          <div className="pt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto border-t border-white/10 text-left">
+          {/* 4 Clean Stats */}
+          <div className="pt-10 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto border-t border-slate-100 text-center">
             <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-brand-accent">15+</div>
-              <div className="text-xs text-slate-300 mt-0.5">Оптовых позиций в каталоге</div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">15+</div>
+              <div className="text-xs text-slate-500 mt-0.5">Позиций в каталоге</div>
             </div>
             <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-white">3</div>
-              <div className="text-xs text-slate-300 mt-0.5">Крупных текстильных центра (TR)</div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">3</div>
+              <div className="text-xs text-slate-500 mt-0.5">Хаба (Денизли, Бурса, Стамбул)</div>
             </div>
             <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-brand-accent">100%</div>
-              <div className="text-xs text-slate-300 mt-0.5">Escrow-защита платежа в ₸</div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-teal-600">100%</div>
+              <div className="text-xs text-slate-500 mt-0.5">Escrow-защита в ₸</div>
             </div>
             <div>
-              <div className="text-2xl sm:text-3xl font-extrabold text-white">0%</div>
-              <div className="text-xs text-slate-300 mt-0.5">Языковой барьер (ИИ перевод)</div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">5%</div>
+              <div className="text-xs text-slate-500 mt-0.5">Прозрачная комиссия</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CATEGORIES GRID */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 sm:-mt-20 relative z-20">
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200/80 p-5 sm:p-7">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-                Популярные категории текстиля
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">Прямые цены от фабрик Денизли, Бурсы и Стамбула</p>
-            </div>
-            <Link
-              href="/catalog"
-              className="text-xs sm:text-sm font-semibold text-brand-blue hover:text-brand-navy flex items-center gap-1"
-            >
-              <span>Смотреть все</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+      {/* CATEGORIES PILLS - Minimalist */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-950 tracking-tight">
+              Категории оптового текстиля
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Прямой доступ к турецким производственным мощностям
+            </p>
           </div>
+          <Link
+            href="/catalog"
+            className="text-xs font-semibold text-teal-700 hover:text-teal-800 flex items-center gap-1 self-start sm:self-auto"
+          >
+            <span>Весь каталог</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/catalog?category=${cat.id}`}
-                className="group flex flex-col items-center justify-center p-4 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-cyan-50/40 hover:border-brand-accent transition-all text-center"
-              >
-                <span className="text-3xl mb-2 group-hover:scale-110 transition-transform">{cat.icon}</span>
-                <span className="font-bold text-slate-800 text-xs sm:text-sm group-hover:text-brand-navy">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+          {categories.map((cat) => (
+            <Link
+              key={cat.id}
+              href={`/catalog?category=${cat.id}`}
+              className="group bg-white p-4 rounded-xl border border-slate-200/70 hover:border-slate-300 hover:shadow-xs transition-all flex flex-col justify-between"
+            >
+              <div className="text-2xl mb-2">{cat.icon}</div>
+              <div>
+                <h3 className="text-xs sm:text-sm font-semibold text-slate-900 group-hover:text-teal-700 transition-colors">
                   {cat.label}
-                </span>
-                <span className="text-[11px] text-slate-400 font-medium mt-1">
-                  от фабрик TR
-                </span>
-              </Link>
-            ))}
-          </div>
+                </h3>
+                <span className="text-[11px] text-slate-600 font-medium">{cat.count} фабричных позиций</span>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
       {/* FEATURED PRODUCTS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-8 gap-3">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <EscrowBadge />
-              <CommissionBadge />
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-              Хиты оптовых поставок из Турции
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-950 tracking-tight">
+              Популярные товары недели
             </h2>
-            <p className="text-sm text-slate-500 mt-1">
-              Цены указаны в USD с автоматическим пересчетом в тенге. Гарантия безопасной сделки.
+            <p className="text-xs text-slate-500 mt-0.5">
+              Сертифицированный текстиль с указанием минимальной партии (MOQ)
             </p>
           </div>
-
           <Link
             href="/catalog"
-            className="flex items-center gap-1.5 text-sm font-bold text-brand-navy hover:text-brand-blue bg-white border border-slate-300 hover:border-brand-navy py-2 px-4 rounded-xl transition-all shadow-sm"
+            className="text-xs font-semibold text-slate-700 hover:text-slate-950 flex items-center gap-1"
           >
-            <span>В каталог товаров</span>
-            <ArrowRight className="w-4 h-4 text-brand-accent" />
+            <span>Смотреть все</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map((p) => (
+            <ProductCard key={p.id} product={p} />
           ))}
         </div>
       </section>
 
-      {/* TURKISH FACTORIES SPOTLIGHT */}
-      <section className="bg-slate-100/80 py-16 border-y border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-bold uppercase tracking-wider text-brand-blue bg-brand-navy/5 px-3 py-1 rounded-full">
-              Производственные хабы Турции
+      {/* HOW IT WORKS - 4 Minimalist Steps */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-8 sm:p-12">
+          <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-teal-600 bg-teal-50 px-2.5 py-1 rounded-md">
+              Прозрачный процесс
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-3">
-              Проверенные фабрики-партнеры
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
+              Как работает «Тюркский мост»
             </h2>
-            <p className="text-sm text-slate-600 mt-2">
-              Мы верифицируем регистрационные документы, производственные мощности и международные сертификаты каждой фабрики.
+            <p className="text-xs sm:text-sm text-slate-500">
+              От первого сообщения на родном языке до прибытия груза на ваш склад в Казахстане
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {suppliers.map((sup) => (
-              <div
-                key={sup.id}
-                className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="w-12 h-12 rounded-xl bg-brand-navy/5 text-brand-navy flex items-center justify-center font-bold text-lg border border-slate-200">
-                      <Building2 className="w-6 h-6 text-brand-blue" />
-                    </div>
-                    {sup.verified && <VerifiedBadge />}
-                  </div>
-
-                  <Link href={`/suppliers/${sup.id}`} className="hover:text-brand-blue transition-colors">
-                    <h3 className="font-extrabold text-slate-900 text-lg leading-snug">
-                      {sup.factory_name}
-                    </h3>
-                  </Link>
-
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 mt-1.5 mb-3">
-                    <MapPin className="w-3.5 h-3.5 text-brand-accent shrink-0" />
-                    <span>{sup.city}, Türkiye</span>
-                    <span className="text-slate-300">•</span>
-                    <span>с {sup.founded_year} г.</span>
-                  </div>
-
-                  <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed mb-4">
-                    {sup.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {sup.certificates.map((cert) => (
-                      <span
-                        key={cert}
-                        className="text-[10px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200"
-                      >
-                        {cert}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-xs font-bold text-emerald-600">
-                    ★ {sup.rating} Рейтинг
-                  </span>
-
-                  <Link
-                    href={`/suppliers/${sup.id}`}
-                    className="text-xs font-bold text-brand-navy hover:text-brand-blue flex items-center gap-1"
-                  >
-                    <span>Профиль фабрики</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+            <div className="space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-900 font-bold flex items-center justify-center text-sm">
+                01
               </div>
-            ))}
+              <h3 className="text-sm font-bold text-slate-900">Выбор товара и фабрики</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Сравнивайте оптовые цены турецких фабрик, проверяйте сертификаты OEKO-TEX и минимальный объем (MOQ).
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 font-bold flex items-center justify-center text-sm">
+                02
+              </div>
+              <h3 className="text-sm font-bold text-slate-900">Диалог с ИИ-переводом</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Пишите на русском или казахском — встроенный переводчик точно передаст плотность, цвета и размеры на турецкий.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-900 font-bold flex items-center justify-center text-sm">
+                03
+              </div>
+              <h3 className="text-sm font-bold text-slate-900">Оплата через Эскроу</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Оплачивайте заказ в тенге. Деньги заморожены на защищенном счете до успешного прибытия груза в Казахстан.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center text-sm">
+                04
+              </div>
+              <h3 className="text-sm font-bold text-slate-900">Приемка и расчет</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Вы проверяете качество партии в Алматы или Астане, подтверждаете приемку — фабрика получает оплату.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* HOW IT WORKS / VALUE PROPOSITION */}
+      {/* FACTORY HUBS SPOTLIGHT */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-            Как «Тюркский мост» защищает сделку
-          </h2>
-          <p className="text-sm text-slate-600 mt-2">
-            Простая и надежная схема работы для казахстанского оптового покупателя
-          </p>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-950 tracking-tight">
+              Производственные кластеры Турции
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Прямые контакты с проверенными фабриками текстильной индустрии
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 relative">
-            <div className="w-10 h-10 rounded-xl bg-brand-navy text-brand-accent font-extrabold text-base flex items-center justify-center mb-4">
-              01
-            </div>
-            <h3 className="font-bold text-slate-900 text-base mb-2">Прямой каталог фабрик</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Выбирайте готовые позиции или заказывайте производство под своим брендом по фабричной себестоимости.
-            </p>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {suppliers.map((s) => (
+            <Link
+              key={s.id}
+              href={`/suppliers/${s.id}`}
+              className="group bg-white rounded-2xl border border-slate-200/80 p-5 hover:border-slate-300 hover:shadow-sm transition-all flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                    <MapPin className="w-3.5 h-3.5 text-teal-600" />
+                    <span className="font-semibold text-slate-800">{s.city}</span>
+                  </div>
+                  {s.verified && (
+                    <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>Проверено</span>
+                    </span>
+                  )}
+                </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 relative">
-            <div className="w-10 h-10 rounded-xl bg-brand-navy text-brand-accent font-extrabold text-base flex items-center justify-center mb-4">
-              02
-            </div>
-            <h3 className="font-bold text-slate-900 text-base mb-2">Чат с ИИ-переводчиком</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Обсуждайте плотность ткани, бирки и сроки на русском/казахском. Фабрика в Турции мгновенно читает на турецком.
-            </p>
-          </div>
+                <h3 className="font-bold text-base text-slate-900 group-hover:text-teal-700 transition-colors">
+                  {s.factory_name}
+                </h3>
+                <p className="text-xs text-slate-500 mt-2 line-clamp-3 leading-relaxed">
+                  {s.description}
+                </p>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 relative">
-            <div className="w-10 h-10 rounded-xl bg-brand-navy text-brand-accent font-extrabold text-base flex items-center justify-center mb-4">
-              03
-            </div>
-            <h3 className="font-bold text-slate-900 text-base mb-2">Оплата через Escrow</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Оплачивайте в тенге по фиксированному курсу. Деньги замораживаются на безопасном счете и защищены платформой.
-            </p>
-          </div>
+                <div className="mt-4 flex flex-wrap gap-1.5">
+                  {s.certificates?.map((c) => (
+                    <span key={c} className="text-[10px] font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 relative">
-            <div className="w-10 h-10 rounded-xl bg-brand-navy text-brand-accent font-extrabold text-base flex items-center justify-center mb-4">
-              04
-            </div>
-            <h3 className="font-bold text-slate-900 text-base mb-2">Приемка партии в РК</h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              После проверки качества и приемки партии на вашем складе в Казахстане деньги перечисляются производителю.
-            </p>
-          </div>
+              <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-700 group-hover:text-slate-950">
+                <span>Каталог фабрики</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
     </div>

@@ -12,8 +12,9 @@ import {
   Shield,
   Menu,
   X,
-  UserCheck,
   ChevronDown,
+  Sparkles,
+  Check,
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/context';
 import { Language, UserRole } from '@/lib/types';
@@ -27,14 +28,17 @@ export function Header() {
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
 
   useEffect(() => {
-    setCurrentUser(AppStore.getCurrentUser());
+    const handleUserChange = () => {
+      setCurrentUser(AppStore.getCurrentUser());
+    };
+    window.addEventListener('tb_user_change', handleUserChange);
+    return () => window.removeEventListener('tb_user_change', handleUserChange);
   }, []);
 
   const handleRoleChange = (role: UserRole) => {
     const updated = AppStore.switchRole(role);
     setCurrentUser(updated);
     setRoleDropdownOpen(false);
-    // Reload page state
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('tb_user_change'));
     }
@@ -62,159 +66,181 @@ export function Header() {
     });
   }
 
+  const roleLabels = {
+    buyer: { title: 'Покупатель (РК)', badge: 'Магазин', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+    supplier: { title: 'Фабрика (TR)', badge: 'Поставщик', color: 'bg-cyan-50 text-cyan-700 border-cyan-200' },
+    admin: { title: 'Администратор', badge: 'Платформа', color: 'bg-purple-50 text-purple-700 border-purple-200' },
+  };
+
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
-      {/* Top Banner: Escrow guarantee & live FX */}
-      <div className="bg-brand-navy text-white text-xs py-1.5 px-4">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80">
+      {/* Top micro-bar: Minimalist status strip */}
+      <div className="bg-slate-50/80 border-b border-slate-100 text-[11px] text-slate-500 py-1.5 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-brand-accent shrink-0" />
-            <span className="hidden sm:inline">
-              {language === 'ru' && 'Безопасная сделка: средства в Эскроу до прибытия груза в Казахстан'}
-              {language === 'tr' && 'Güvenli Ticaret: Ödemeniz Kazakistan’a teslimata kadar Escrow güvencesinde'}
-              {language === 'kk' && 'Қауіпсіз мәміле: жүк Қазақстанға жеткенше қаржы Эскроуда сақталады'}
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1 font-medium text-slate-700">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Эскроу-защита 100%</span>
             </span>
-            <span className="sm:hidden font-medium">Безопасная сделка 100% (Escrow)</span>
+            <span className="text-slate-300">•</span>
+            <span className="hidden sm:inline-flex items-center gap-1 text-slate-600">
+              <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+              <span>ИИ-перевод TR ⇄ RU ⇄ KK</span>
+            </span>
+            <span className="hidden md:inline text-slate-300">•</span>
+            <span className="hidden md:inline text-slate-600">Комиссия сервиса 5%</span>
           </div>
 
-          <div className="flex items-center gap-4">
-            <span className="text-slate-300">
-              USD/KZT: <strong className="text-brand-accent">502.50 ₸</strong>
-            </span>
-            <span className="hidden md:inline-block bg-brand-accent/20 text-brand-accent px-2 py-0.5 rounded text-[11px] font-semibold">
-              Комиссия 5%
+          <div className="flex items-center gap-3 font-medium">
+            <span className="text-slate-600">
+              USD / KZT: <strong className="text-slate-900 font-semibold">502.50 ₸</strong>
             </span>
           </div>
         </div>
       </div>
 
-      {/* Main Navigation Bar */}
+      {/* Main Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-navy to-brand-blue flex items-center justify-center text-brand-accent shadow-md shadow-brand-navy/20">
-              <span className="font-extrabold text-xl tracking-wider">TB</span>
+          {/* Brand Logo */}
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-9 h-9 rounded-xl bg-slate-900 text-teal-400 flex items-center justify-center font-bold text-sm tracking-wide shadow-xs group-hover:bg-slate-800 transition-colors">
+              TB
             </div>
-            <div>
-              <span className="text-lg font-bold text-brand-navy tracking-tight block leading-tight">
-                {t.appName}
-              </span>
-              <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-500 block">
-                B2B TR ⇄ KZ
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-slate-900 tracking-tight text-base sm:text-lg">
+                  {language === 'tr' ? 'Türk Köprüsü' : language === 'kk' ? 'Түркі көпірі' : 'Тюркский мост'}
+                </span>
+                <span className="bg-teal-50 text-teal-700 border border-teal-200 text-[10px] font-bold px-1.5 py-0.2 rounded-md uppercase tracking-wider">
+                  B2B
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-600 font-medium hidden sm:block">
+                Турция ⇄ Казахстан • Оптовый текстиль
               </span>
             </div>
           </Link>
 
-          {/* Desktop Links */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => {
-              const active = pathname === link.href || pathname.startsWith(link.href + '/');
+          {/* Desktop Nav Items */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navLinks.map((item) => {
+              const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
               return (
                 <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  key={item.href}
+                  href={item.href}
+                  className={`px-3.5 py-2 rounded-lg text-xs font-semibold transition-all ${
                     active
-                      ? 'bg-brand-navy/5 text-brand-navy font-semibold'
-                      : 'text-slate-600 hover:text-brand-navy hover:bg-slate-50'
+                      ? 'bg-slate-100 text-slate-900'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                   }`}
                 >
-                  {link.label}
+                  {item.label}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Right Controls: Language & Role Switcher */}
-          <div className="hidden md:flex items-center gap-3">
-            {/* Language Switcher */}
-            <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-              {(['ru', 'tr', 'kk'] as Language[]).map((lng) => (
-                <button
-                  key={lng}
-                  onClick={() => setLanguage(lng)}
-                  className={`px-2.5 py-1 rounded-md text-xs font-bold uppercase transition-all ${
-                    language === lng
-                      ? 'bg-white text-brand-navy shadow-sm'
-                      : 'text-slate-500 hover:text-brand-navy'
-                  }`}
-                >
-                  {lng}
-                </button>
-              ))}
+          {/* Controls: Language switch + Role pill */}
+          <div className="hidden sm:flex items-center gap-2.5">
+            {/* Minimalist Segmented Language Switcher */}
+            <div className="flex items-center bg-slate-100 p-0.5 rounded-lg text-[11px] font-bold text-slate-600">
+              <button
+                onClick={() => setLanguage('ru')}
+                className={`px-2 py-1 rounded-md transition-all ${
+                  language === 'ru' ? 'bg-white text-slate-900 shadow-xs font-extrabold' : 'hover:text-slate-900'
+                }`}
+                title="Русский"
+              >
+                RU
+              </button>
+              <button
+                onClick={() => setLanguage('tr')}
+                className={`px-2 py-1 rounded-md transition-all ${
+                  language === 'tr' ? 'bg-white text-slate-900 shadow-xs font-extrabold' : 'hover:text-slate-900'
+                }`}
+                title="Türkçe"
+              >
+                TR
+              </button>
+              <button
+                onClick={() => setLanguage('kk')}
+                className={`px-2 py-1 rounded-md transition-all ${
+                  language === 'kk' ? 'bg-white text-slate-900 shadow-xs font-extrabold' : 'hover:text-slate-900'
+                }`}
+                title="Қазақша"
+              >
+                KK
+              </button>
             </div>
 
-            {/* Role Switcher Pill for MVP demonstration */}
+            {/* Role Switcher Dropdown */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-                className="flex items-center gap-2 pl-3 pr-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-medium text-slate-800 transition-colors border border-slate-200"
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all shadow-xs hover:border-slate-300 ${
+                  roleLabels[currentUser.role]?.color || 'bg-slate-50 border-slate-200 text-slate-700'
+                }`}
               >
-                <div className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
-                <span className="text-slate-500">Роль:</span>
-                <span className="font-semibold text-brand-navy">
-                  {currentUser.role === 'buyer' && '🛒 Покупатель (РК)'}
-                  {currentUser.role === 'supplier' && '🏭 Фабрика (Турция)'}
-                  {currentUser.role === 'admin' && '🛡️ Админ'}
-                </span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                <span className="w-2 h-2 rounded-full bg-current"></span>
+                <span>{roleLabels[currentUser.role]?.title}</span>
+                <ChevronDown className="w-3.5 h-3.5 opacity-60" />
               </button>
 
               {roleDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-100 py-1.5 z-50 text-xs">
-                  <div className="px-3 py-1.5 border-b border-slate-100 font-bold text-slate-400 uppercase tracking-wider text-[10px]">
-                    Переключить демо-роль
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs">
+                  <div className="px-3.5 py-2 border-b border-slate-100">
+                    <div className="text-[10px] uppercase font-bold text-slate-400">Переключить активную роль</div>
+                    <div className="font-semibold text-slate-800 mt-0.5 truncate">{currentUser.name}</div>
+                    <div className="text-[11px] text-slate-500 truncate">{currentUser.company} ({currentUser.city})</div>
                   </div>
+
                   <button
                     onClick={() => handleRoleChange('buyer')}
-                    className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-50 ${
-                      currentUser.role === 'buyer' ? 'bg-cyan-50/50 font-bold text-brand-navy' : ''
-                    }`}
+                    className="w-full text-left px-3.5 py-2.5 hover:bg-slate-50 flex items-center justify-between text-slate-700 font-medium"
                   >
                     <div>
-                      <div className="font-semibold">Покупатель (Казахстан)</div>
-                      <div className="text-[11px] text-slate-500">Асель Муканова, Алматы</div>
+                      <div className="font-semibold text-slate-900">Покупатель (Казахстан)</div>
+                      <div className="text-[11px] text-slate-500">Магазин Silk Trade KZ (Алматы)</div>
                     </div>
-                    {currentUser.role === 'buyer' && <UserCheck className="w-4 h-4 text-brand-accent" />}
+                    {currentUser.role === 'buyer' && <Check className="w-4 h-4 text-emerald-600" />}
                   </button>
+
                   <button
                     onClick={() => handleRoleChange('supplier')}
-                    className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-50 ${
-                      currentUser.role === 'supplier' ? 'bg-cyan-50/50 font-bold text-brand-navy' : ''
-                    }`}
+                    className="w-full text-left px-3.5 py-2.5 hover:bg-slate-50 flex items-center justify-between text-slate-700 font-medium"
                   >
                     <div>
-                      <div className="font-semibold">Поставщик (Турция)</div>
-                      <div className="text-[11px] text-slate-500">Mehmet Demir, Денизли</div>
+                      <div className="font-semibold text-slate-900">Фабрика (Турция)</div>
+                      <div className="text-[11px] text-slate-500">Denizli Pamuk Tekstil (Денизли)</div>
                     </div>
-                    {currentUser.role === 'supplier' && <UserCheck className="w-4 h-4 text-brand-accent" />}
+                    {currentUser.role === 'supplier' && <Check className="w-4 h-4 text-emerald-600" />}
                   </button>
+
                   <button
                     onClick={() => handleRoleChange('admin')}
-                    className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-50 ${
-                      currentUser.role === 'admin' ? 'bg-cyan-50/50 font-bold text-brand-navy' : ''
-                    }`}
+                    className="w-full text-left px-3.5 py-2.5 hover:bg-slate-50 flex items-center justify-between text-slate-700 font-medium"
                   >
                     <div>
-                      <div className="font-semibold">Администратор платформы</div>
-                      <div className="text-[11px] text-slate-500">Ерлан Садыков, Алматы</div>
+                      <div className="font-semibold text-slate-900">Администратор платформы</div>
+                      <div className="text-[11px] text-slate-500">Модерация фабрик и комиссия 5%</div>
                     </div>
-                    {currentUser.role === 'admin' && <UserCheck className="w-4 h-4 text-brand-accent" />}
+                    {currentUser.role === 'admin' && <Check className="w-4 h-4 text-emerald-600" />}
                   </button>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Mobile hamburger button */}
+          {/* Mobile menu button */}
           <div className="flex md:hidden items-center gap-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-600 hover:text-brand-navy hover:bg-slate-100"
-              aria-label="Toggle menu"
+              className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
@@ -223,18 +249,28 @@ export function Header() {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-3">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="space-y-1">
+            {navLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-100"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-500">Язык интерфейса:</span>
-            <div className="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+            <div className="flex gap-1 text-xs font-bold">
               {(['ru', 'tr', 'kk'] as Language[]).map((lng) => (
                 <button
                   key={lng}
-                  onClick={() => {
-                    setLanguage(lng);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`px-3 py-1 rounded-md text-xs font-bold uppercase ${
-                    language === lng ? 'bg-white text-brand-navy shadow-sm' : 'text-slate-500'
+                  onClick={() => setLanguage(lng)}
+                  className={`px-2.5 py-1 rounded-md uppercase ${
+                    language === lng ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'
                   }`}
                 >
                   {lng}
@@ -243,59 +279,29 @@ export function Header() {
             </div>
           </div>
 
-          <div className="space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50"
-              >
-                <link.icon className="w-5 h-5 text-brand-navy" />
-                <span>{link.label}</span>
-              </Link>
-            ))}
-          </div>
-
-          {/* Mobile Role Switcher */}
-          <div className="pt-3 border-t border-slate-100">
-            <div className="text-xs font-semibold text-slate-500 mb-2">Активная роль (демо):</div>
-            <div className="grid grid-cols-3 gap-1.5 text-xs">
+          <div className="pt-2">
+            <div className="text-xs font-semibold text-slate-500 mb-1.5">Текущая роль:</div>
+            <div className="grid grid-cols-3 gap-1.5 text-xs font-medium">
               <button
-                onClick={() => {
-                  handleRoleChange('buyer');
-                  setMobileMenuOpen(false);
-                }}
-                className={`py-2 px-2 text-center rounded-lg border font-semibold ${
-                  currentUser.role === 'buyer'
-                    ? 'bg-brand-navy text-white border-brand-navy'
-                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                onClick={() => handleRoleChange('buyer')}
+                className={`py-1.5 px-2 rounded-lg text-center ${
+                  currentUser.role === 'buyer' ? 'bg-slate-900 text-white font-bold' : 'bg-slate-100 text-slate-700'
                 }`}
               >
                 Покупатель
               </button>
               <button
-                onClick={() => {
-                  handleRoleChange('supplier');
-                  setMobileMenuOpen(false);
-                }}
-                className={`py-2 px-2 text-center rounded-lg border font-semibold ${
-                  currentUser.role === 'supplier'
-                    ? 'bg-brand-navy text-white border-brand-navy'
-                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                onClick={() => handleRoleChange('supplier')}
+                className={`py-1.5 px-2 rounded-lg text-center ${
+                  currentUser.role === 'supplier' ? 'bg-slate-900 text-white font-bold' : 'bg-slate-100 text-slate-700'
                 }`}
               >
                 Фабрика
               </button>
               <button
-                onClick={() => {
-                  handleRoleChange('admin');
-                  setMobileMenuOpen(false);
-                }}
-                className={`py-2 px-2 text-center rounded-lg border font-semibold ${
-                  currentUser.role === 'admin'
-                    ? 'bg-brand-navy text-white border-brand-navy'
-                    : 'bg-slate-50 text-slate-700 border-slate-200'
+                onClick={() => handleRoleChange('admin')}
+                className={`py-1.5 px-2 rounded-lg text-center ${
+                  currentUser.role === 'admin' ? 'bg-slate-900 text-white font-bold' : 'bg-slate-100 text-slate-700'
                 }`}
               >
                 Админ

@@ -92,16 +92,16 @@ export default function OrderDetailPage() {
       <nav className="text-xs text-slate-500 flex items-center gap-2">
         <Link href="/" className="hover:text-brand-navy">Главная</Link>
         <span>/</span>
-        <Link href="/orders" className="hover:text-brand-navy">Мои заказы</Link>
+        <Link href="/orders" className="hover:text-slate-900">Мои заказы</Link>
         <span>/</span>
         <span className="text-slate-900 font-semibold">{order.order_number}</span>
       </nav>
 
       {/* Header Info */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="flex flex-wrap items-center gap-3 mb-2">
-            <span className="text-2xl font-black text-brand-navy">{order.order_number}</span>
+          <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
+            <span className="text-2xl font-black text-slate-950">{order.order_number}</span>
             {getStatusBadge(order.status, t.orders.statuses[order.status] || order.status)}
             <EscrowBadge />
           </div>
@@ -114,9 +114,9 @@ export default function OrderDetailPage() {
         <div className="flex items-center gap-3">
           <Link
             href={`/chat?supplierId=${order.supplier_id}&productId=${firstItem?.product_id}`}
-            className="flex items-center gap-2 py-3 px-4 rounded-xl border border-slate-300 hover:border-brand-navy text-slate-800 text-xs font-bold transition-all hover:bg-slate-50"
+            className="flex items-center gap-2 py-2.5 px-4 rounded-xl border border-slate-200/80 hover:border-slate-300 text-slate-700 text-xs font-semibold transition-all hover:bg-slate-50"
           >
-            <MessageSquare className="w-4 h-4 text-brand-blue" />
+            <MessageSquare className="w-4 h-4 text-teal-600" />
             <span>Чат по заказу (ИИ-перевод)</span>
           </Link>
         </div>
@@ -143,7 +143,7 @@ export default function OrderDetailPage() {
                 key={stage.key}
                 className={`p-3 rounded-xl border flex flex-col items-center text-center transition-all ${
                   isCurrent
-                    ? 'bg-brand-navy text-white border-brand-navy shadow-md ring-2 ring-brand-accent/50'
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-sm ring-2 ring-teal-400/50'
                     : isCompleted
                     ? 'bg-emerald-50 text-emerald-900 border-emerald-200'
                     : 'bg-slate-50 text-slate-400 border-slate-200'
@@ -152,7 +152,7 @@ export default function OrderDetailPage() {
                 <div
                   className={`w-7 h-7 rounded-lg flex items-center justify-center mb-2 ${
                     isCurrent
-                      ? 'bg-brand-accent text-brand-navy'
+                      ? 'bg-teal-400 text-slate-900'
                       : isCompleted
                       ? 'bg-emerald-600 text-white'
                       : 'bg-slate-200 text-slate-500'

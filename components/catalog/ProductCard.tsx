@@ -15,73 +15,72 @@ export function ProductCard({ product }: { product: Product }) {
     language === 'tr'
       ? product.title_tr
       : language === 'kk' && product.title_kk
-      ? product.title_kk
-      : product.title_ru;
+        ? product.title_kk
+        : product.title_ru;
 
   const desc =
     language === 'tr'
       ? product.description_tr
       : language === 'kk' && product.description_kk
-      ? product.description_kk
-      : product.description_ru;
+        ? product.description_kk
+        : product.description_ru;
 
   const priceKzt = convertUsdToKzt(product.price_usd);
   const supplier = product.supplier;
 
   return (
-    <div className="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
-      {/* Photo with badges */}
-      <Link href={`/products/${product.id}`} className="relative block h-56 sm:h-64 overflow-hidden bg-slate-100">
-        <Image
-          src={product.images[0] || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80'}
-          alt={title}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-          <span className="bg-brand-navy/90 text-white text-[11px] font-bold px-2.5 py-1 rounded-full backdrop-blur-sm shadow-sm">
-            MOQ: {product.moq} {t.product.pcs}
-          </span>
-          {supplier?.verified && (
-            <span className="bg-emerald-500 text-white text-[11px] font-semibold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
-              <ShieldCheck className="w-3 h-3" />
-              <span>Проверено</span>
+    <div className="group bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between hover:border-slate-300">
+      <div>
+        {/* Photo Container */}
+        <Link href={`/products/${product.id}`} className="relative block h-52 sm:h-56 overflow-hidden bg-slate-100">
+          <Image
+            src={product.images[0] || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80'}
+            alt={title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-103 transition-transform duration-500 ease-out"
+          />
+
+          {/* Minimalist Floating Badges */}
+          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+            <span className="bg-slate-900/80 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full backdrop-blur-md shadow-2xs">
+              MOQ: {product.moq} {t.product.pcs}
             </span>
-          )}
-        </div>
+            {supplier?.verified && (
+              <span className="bg-white/90 text-emerald-800 border border-emerald-200 text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 backdrop-blur-md">
+                <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                <span>Проверено</span>
+              </span>
+            )}
+          </div>
 
-        <div className="absolute bottom-3 right-3 bg-white/95 text-brand-navy text-xs font-semibold px-2.5 py-1 rounded-lg backdrop-blur-sm shadow-sm flex items-center gap-1">
-          <Clock className="w-3.5 h-3.5 text-slate-500" />
-          <span>{product.lead_time_days} {t.product.days}</span>
-        </div>
-      </Link>
+          <div className="absolute bottom-3 right-3 bg-white/90 text-slate-700 text-[11px] font-semibold px-2 py-0.5 rounded-md backdrop-blur-md shadow-2xs flex items-center gap-1">
+            <Clock className="w-3 h-3 text-slate-400" />
+            <span>{product.lead_time_days} {t.product.days}</span>
+          </div>
+        </Link>
 
-      {/* Details */}
-      <div className="p-5 flex-1 flex flex-col justify-between">
-        <div>
-          {/* Supplier Info */}
+        {/* Info */}
+        <div className="p-4 sm:p-5">
           {supplier && (
             <Link
               href={`/suppliers/${supplier.id}`}
-              className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-brand-navy font-medium mb-1.5"
+              className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 font-medium mb-1.5"
             >
-              <MapPin className="w-3 h-3 text-brand-accent shrink-0" />
-              <span className="truncate max-w-[200px] font-semibold text-slate-700">{supplier.factory_name}</span>
+              <MapPin className="w-3 h-3 text-teal-600 shrink-0" />
+              <span className="truncate max-w-[180px] font-semibold text-slate-700">{supplier.factory_name}</span>
               <span className="text-slate-400">({supplier.city})</span>
             </Link>
           )}
 
-          {/* Title */}
-          <Link href={`/products/${product.id}`} className="block group-hover:text-brand-blue transition-colors">
-            <h3 className="font-bold text-slate-900 text-base leading-snug line-clamp-2">
+          <Link href={`/products/${product.id}`} className="block group-hover:text-teal-700 transition-colors">
+            <h3 className="font-bold text-slate-900 text-sm sm:text-base leading-snug line-clamp-2">
               {title}
             </h3>
           </Link>
 
-          {/* Composition & density */}
           {(product.composition || product.density_gsm) && (
-            <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+            <div className="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
               <Layers className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <span className="truncate">
                 {product.composition} {product.density_gsm ? `• ${product.density_gsm} г/м²` : ''}
@@ -89,56 +88,49 @@ export function ProductCard({ product }: { product: Product }) {
             </div>
           )}
 
-          {/* Short description */}
           <p className="mt-2 text-xs text-slate-500 line-clamp-2 leading-relaxed">
             {desc}
           </p>
         </div>
+      </div>
 
-        {/* Pricing & Actions */}
-        <div className="pt-4 mt-4 border-t border-slate-100">
-          <div className="flex items-baseline justify-between mb-3.5">
-            <div>
-              <span className="text-[11px] font-medium text-slate-400 block uppercase tracking-wider">
-                {t.product.unitPrice}
+      {/* Pricing & Actions */}
+      <div className="p-4 sm:p-5 pt-0">
+        <div className="pt-3 border-t border-slate-100 flex items-baseline justify-between mb-3">
+          <div>
+            <div className="text-[10px] text-slate-600 font-medium">{t.product.unitPrice}</div>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-lg font-extrabold text-slate-950">
+                {formatUsd(product.price_usd)}
               </span>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl font-extrabold text-brand-navy">
-                  {formatUsd(product.price_usd)}
-                </span>
-                <span className="text-xs font-semibold text-slate-500">
-                  ≈ {formatKzt(priceKzt)}
-                </span>
-              </div>
-            </div>
-
-            <div className="text-right">
-              <span className="text-[11px] font-medium text-slate-400 block uppercase tracking-wider">
-                Партия от
-              </span>
-              <span className="text-sm font-bold text-slate-700">
-                {formatUsd(product.price_usd * product.moq)}
-              </span>
+              <span className="text-xs text-slate-400 font-normal">/ {t.product.pcs}</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <Link
-              href={`/chat?supplierId=${product.supplier_id}&productId=${product.id}`}
-              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border border-slate-300 hover:border-brand-navy text-slate-700 hover:text-brand-navy text-xs font-semibold transition-all bg-white hover:bg-slate-50"
-            >
-              <MessageSquare className="w-3.5 h-3.5 text-brand-blue" />
-              <span>{t.product.chatWithSupplier.split(' ')[0]}</span>
-            </Link>
-
-            <Link
-              href={`/checkout/${product.id}`}
-              className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-brand-navy hover:bg-brand-blue text-white text-xs font-bold transition-all shadow-sm hover:shadow"
-            >
-              <span>{t.product.orderNow.split(' ')[0]}</span>
-              <ArrowRight className="w-3.5 h-3.5 text-brand-accent" />
-            </Link>
+          <div className="text-right">
+            <div className="text-[10px] text-slate-600 font-medium">В тенге:</div>
+            <div className="text-xs font-semibold text-slate-700">
+              ~{formatKzt(priceKzt)}
+            </div>
           </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/checkout/${product.id}`}
+            className="flex-1 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold text-center transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
+          >
+            <span>Заказать</span>
+            <ArrowRight className="w-3.5 h-3.5 text-teal-400" />
+          </Link>
+
+          <Link
+            href={`/chat?productId=${product.id}&supplierId=${product.supplier_id}`}
+            className="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-colors"
+            title="Чат с фабрикой (ИИ-перевод)"
+          >
+            <MessageSquare className="w-4 h-4" />
+          </Link>
         </div>
       </div>
     </div>
