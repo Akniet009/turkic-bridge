@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { createWoodTextures } from './fabricTextures';
 
-export type ModelTypeId = 'sofa' | 'chair' | 'bed' | 'drape';
+export type ModelTypeId = 'sofa' | 'chair' | 'bed' | 'towels' | 'drape';
 
 export interface ModelMeta {
   id: ModelTypeId;
@@ -14,54 +15,63 @@ export interface ModelMeta {
 export const MODEL_TYPES: ModelMeta[] = [
   {
     id: 'sofa',
-    nameRu: 'Диван',
-    subtitleRu: '3-местный диван «Istanbul Loft» с пледом и подушками',
-    defaultCamera: [2.7, 1.65, 3.0],
-    target: [0, 0.45, 0],
+    nameRu: 'Диван с пледом',
+    subtitleRu: '3-местный диван с кантом, подушками и драпированным пледом',
+    defaultCamera: [2.5, 1.55, 2.75],
+    target: [0, 0.44, 0],
   },
   {
     id: 'chair',
     nameRu: 'Кресло',
-    subtitleRu: 'Дизайнерское кресло «Bursa Lounge» с каретной отстрочкой',
-    defaultCamera: [1.8, 1.35, 2.0],
-    target: [0, 0.45, 0],
+    subtitleRu: 'Дизайнерское кресло со стяжкой и поясничной подушкой',
+    defaultCamera: [1.65, 1.25, 1.85],
+    target: [0, 0.46, 0],
   },
   {
     id: 'bed',
-    nameRu: 'Кровать',
-    subtitleRu: 'Гостиничный комплект «Denizli Suite» (изголовье + бельё)',
-    defaultCamera: [2.9, 1.9, 3.1],
-    target: [0, 0.5, 0],
+    nameRu: 'Кровать с бельём',
+    subtitleRu: 'Гостиничный комплект: изголовье, пухлое одеяло, раннер и подушки',
+    defaultCamera: [2.65, 1.75, 2.85],
+    target: [0, 0.52, 0],
+  },
+  {
+    id: 'towels',
+    nameRu: 'Полотенца на скамье',
+    subtitleRu: 'Стопка сложенных махровых полотенец с бордюром и роллы на дубовой скамье',
+    defaultCamera: [1.35, 0.95, 1.45],
+    target: [0, 0.36, 0],
   },
   {
     id: 'drape',
-    nameRu: 'Драпировка',
-    subtitleRu: 'Шторная драпировка и оптовый рулон ткани «Marmara»',
-    defaultCamera: [2.1, 1.35, 2.5],
-    target: [0, 0.9, 0],
+    nameRu: 'Драпировка и рулон',
+    subtitleRu: 'Архитектурная драпировка полотна и оптовый рулон ткани',
+    defaultCamera: [1.95, 1.28, 2.25],
+    target: [0, 0.88, 0],
   },
 ];
 
 function createWoodMaterial() {
+  const tex = createWoodTextures();
   return new THREE.MeshStandardMaterial({
-    color: new THREE.Color('#6D4C33'),
-    roughness: 0.48,
-    metalness: 0.05,
+    map: tex.map,
+    roughnessMap: tex.roughnessMap,
+    roughness: 0.52,
+    metalness: 0.04,
   });
 }
 
 function createBrassMaterial() {
   return new THREE.MeshStandardMaterial({
-    color: new THREE.Color('#C7A252'),
-    roughness: 0.25,
-    metalness: 0.85,
+    color: new THREE.Color('#CFA958'),
+    roughness: 0.24,
+    metalness: 0.88,
   });
 }
 
 function createWhiteLinenMaterial() {
   return new THREE.MeshStandardMaterial({
-    color: new THREE.Color('#F5F3EE'),
-    roughness: 0.72,
+    color: new THREE.Color('#F7F5F0'),
+    roughness: 0.78,
     metalness: 0.02,
   });
 }
@@ -73,6 +83,86 @@ function tagFabric(mesh: THREE.Mesh, role: 'primary' | 'accent' = 'primary') {
   return mesh;
 }
 
+/**
+ * Deforms a subdivided BoxGeometry into a soft, plump upholstered cushion or pillow
+ * with natural rounded crown bulge and slightly pinched stitched edges.
+ */
+function createPlumpCushionGeometry(
+  w: number,
+  h: number,
+  d: number,
+  bulge = 0.032,
+  pinch = 0.015,
+  segs = 18
+): THREE.BufferGeometry {
+  const geo = new THREE.BoxGeometry(w, h, d, segs, Math.max(8, Math.floor(segs / 2)), segs);
+  const pos = geo.attributes.position;
+  const hw = w / 2;
+  const hh = h / 2;
+  const hd = d / 2;
+
+  for (let i = 0; i < pos.count; i++) {
+    let x = pos.getX(i);
+    let y = pos.getY(i);
+    let z = pos.getZ(i);
+
+    const nx = x / hw; // -1..1
+    const ny = y / hh; // -1..1
+    const nz = z / hd; // -1..1
+
+    // Smooth dome inflation toward center of each face
+    const r2 = Math.min(1, nx * nx * 0.65 + nz * nz * 0.65);
+    const dome = Math.cos(r2 * Math.PI * 0.5);
+
+    // Round off corners smoothly
+    const edgeRound = Math.sqrt(Math.max(0.01, (1 - 0.16 * nx * nx) * (1 - 0.16 * nz * nz)));
+    y *= edgeRound;
+
+    // Add soft crown puff on top and bottom
+    y += Math.sign(y) * dome * bulge * (0.4 + 0.6 * Math.abs(ny));
+
+    // Slight tuck along lateral edges for tailored upholstery look
+    const seamTuck = (1 - Math.abs(ny)) * pinch;
+    x -= Math.sign(x) * seamTuck * Math.abs(nx);
+    z -= Math.sign(z) * seamTuck * Math.abs(nz);
+
+    pos.setXYZ(i, x, y, z);
+  }
+
+  geo.computeVertexNormals();
+  return geo;
+}
+
+/**
+ * Adds tailored piping/welt seam along a rectangular cushion perimeter.
+ */
+function createPipingFrame(
+  w: number,
+  d: number,
+  radius: number,
+  mat: THREE.Material
+): THREE.Mesh {
+  const hw = w / 2 - 0.012;
+  const hd = d / 2 - 0.012;
+  const r = 0.04;
+  const pts: THREE.Vector3[] = [];
+  const corners: [number, number, number][] = [
+    [hw - r, -hd + r, -Math.PI / 2],
+    [hw - r, hd - r, 0],
+    [-hw + r, hd - r, Math.PI / 2],
+    [-hw + r, -hd + r, Math.PI],
+  ];
+  corners.forEach(([cx, cz, startA]) => {
+    for (let s = 0; s <= 5; s++) {
+      const a = startA + (s / 5) * (Math.PI / 2);
+      pts.push(new THREE.Vector3(cx + Math.cos(a) * r, 0, cz + Math.sin(a) * r));
+    }
+  });
+  const curve = new THREE.CatmullRomCurve3(pts, true);
+  const geo = new THREE.TubeGeometry(curve, 64, radius, 8, true);
+  return tagFabric(new THREE.Mesh(geo, mat), 'accent');
+}
+
 function createTaperedLeg(
   height: number,
   topR: number,
@@ -81,13 +171,13 @@ function createTaperedLeg(
   brassMat: THREE.Material
 ) {
   const legGroup = new THREE.Group();
-  const woodGeo = new THREE.CylinderGeometry(topR, botR, height * 0.82, 20);
+  const woodGeo = new THREE.CylinderGeometry(topR, botR, height * 0.82, 24);
   const woodMesh = new THREE.Mesh(woodGeo, woodMat);
   woodMesh.position.y = height * 0.5 + height * 0.09;
   woodMesh.castShadow = true;
   legGroup.add(woodMesh);
 
-  const ferruleGeo = new THREE.CylinderGeometry(botR * 1.02, botR * 0.92, height * 0.18, 20);
+  const ferruleGeo = new THREE.CylinderGeometry(botR * 1.02, botR * 0.9, height * 0.18, 24);
   const ferruleMesh = new THREE.Mesh(ferruleGeo, brassMat);
   ferruleMesh.position.y = height * 0.09;
   ferruleMesh.castShadow = true;
@@ -97,8 +187,9 @@ function createTaperedLeg(
 }
 
 /**
- * 1. Detailed 3-Seater Sofa with wooden plinth, 3 rounded seat cushions,
- * tufted backrest cushions, armrests, throw pillows, and a draped blanket.
+ * 1. High-detail 3-Seater Sofa with oak grain base, brass ferrules,
+ * 3 plump sculpted seat cushions with piping seams, tufted backrest cushions,
+ * throw pillows, and a rippled draped throw blanket.
  */
 export function buildSofaModel(
   primaryMat: THREE.Material,
@@ -108,130 +199,105 @@ export function buildSofaModel(
   const woodMat = createWoodMaterial();
   const brassMat = createBrassMaterial();
 
-  // Legs (4 corner + 1 center support)
+  // 4 Tapered Oak Legs + Brass Tips
   const legPositions: [number, number, number][] = [
-    [-1.12, 0, 0.38],
-    [1.12, 0, 0.38],
-    [-1.12, 0, -0.38],
-    [1.12, 0, -0.38],
+    [-1.1, 0, 0.38],
+    [1.1, 0, 0.38],
+    [-1.1, 0, -0.38],
+    [1.1, 0, -0.38],
   ];
-  legPositions.forEach(([x, y, z], i) => {
-    const leg = createTaperedLeg(0.2, 0.032, 0.02, woodMat, brassMat);
+  legPositions.forEach(([x, y, z]) => {
+    const leg = createTaperedLeg(0.2, 0.032, 0.019, woodMat, brassMat);
     leg.position.set(x, y, z);
-    leg.rotation.z = x < 0 ? 0.08 : -0.08;
-    leg.rotation.x = z > 0 ? 0.08 : -0.08;
+    leg.rotation.z = x < 0 ? 0.09 : -0.09;
+    leg.rotation.x = z > 0 ? 0.09 : -0.09;
     group.add(leg);
   });
 
-  // Solid oak base plinth
-  const plinth = new THREE.Mesh(new RoundedBoxGeometry(2.44, 0.07, 0.94, 4, 0.02), woodMat);
+  // Oak plinth base
+  const plinth = new THREE.Mesh(new RoundedBoxGeometry(2.44, 0.065, 0.94, 5, 0.02), woodMat);
   plinth.position.set(0, 0.22, 0);
   plinth.castShadow = true;
   plinth.receiveShadow = true;
   group.add(plinth);
 
-  // Upholstered lower deck
+  // Upholstered Deck
   const deck = tagFabric(
-    new THREE.Mesh(new RoundedBoxGeometry(2.38, 0.16, 0.9, 5, 0.04), primaryMat),
+    new THREE.Mesh(new RoundedBoxGeometry(2.38, 0.15, 0.9, 6, 0.04), primaryMat),
     'primary'
   );
   deck.position.set(0, 0.32, 0);
   group.add(deck);
 
-  // 3 Plush Seat Cushions with subtle spacing
-  const cushionW = 0.72;
-  [-0.73, 0, 0.73].forEach((x) => {
-    const seat = tagFabric(
-      new THREE.Mesh(new RoundedBoxGeometry(cushionW, 0.17, 0.76, 6, 0.06), primaryMat),
-      'primary'
-    );
+  // 3 Sculpted Plump Seat Cushions with Top Piping
+  [-0.72, 0, 0.72].forEach((x) => {
+    const seatGeo = createPlumpCushionGeometry(0.7, 0.16, 0.75, 0.035, 0.015, 20);
+    const seat = tagFabric(new THREE.Mesh(seatGeo, primaryMat), 'primary');
     seat.position.set(x, 0.47, 0.04);
     group.add(seat);
+
+    const piping = createPipingFrame(0.68, 0.73, 0.008, accentMat);
+    piping.position.set(x, 0.545, 0.04);
+    group.add(piping);
   });
 
-  // Backrest frame
+  // Backrest Frame
   const backFrame = tagFabric(
-    new THREE.Mesh(new RoundedBoxGeometry(2.42, 0.56, 0.18, 5, 0.05), primaryMat),
+    new THREE.Mesh(new RoundedBoxGeometry(2.42, 0.58, 0.18, 6, 0.055), primaryMat),
     'primary'
   );
   backFrame.position.set(0, 0.62, -0.38);
   group.add(backFrame);
 
-  // 3 Angled Backrest Cushions
-  [-0.73, 0, 0.73].forEach((x) => {
-    const backCushion = tagFabric(
-      new THREE.Mesh(new RoundedBoxGeometry(cushionW, 0.44, 0.19, 6, 0.07), primaryMat),
-      'primary'
-    );
-    backCushion.position.set(x, 0.68, -0.22);
-    backCushion.rotation.x = -0.15;
+  // 3 Angled Plump Back Cushions + Tufted Dimple Buttons
+  [-0.72, 0, 0.72].forEach((x) => {
+    const backGeo = createPlumpCushionGeometry(0.69, 0.44, 0.18, 0.028, 0.012, 16);
+    const backCushion = tagFabric(new THREE.Mesh(backGeo, primaryMat), 'primary');
+    backCushion.position.set(x, 0.69, -0.22);
+    backCushion.rotation.x = -0.16;
     group.add(backCushion);
 
-    // Subtle tufted button indent accent
-    const btn = tagFabric(
-      new THREE.Mesh(new THREE.SphereGeometry(0.018, 12, 12), accentMat),
-      'accent'
-    );
-    btn.scale.set(1, 1, 0.4);
-    btn.position.set(x, 0.68, -0.125);
-    group.add(btn);
+    [-0.14, 0.14].forEach((bx) => {
+      const btn = tagFabric(new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), accentMat), 'accent');
+      btn.scale.set(1, 1, 0.45);
+      btn.position.set(x + bx, 0.7, -0.12);
+      group.add(btn);
+    });
   });
 
-  // Left & Right Sculpted Armrests
+  // Left & Right Tailored Armrests with front welt trim
   [-1.13, 1.13].forEach((x) => {
     const arm = tagFabric(
-      new THREE.Mesh(new RoundedBoxGeometry(0.18, 0.44, 0.92, 6, 0.06), primaryMat),
+      new THREE.Mesh(new RoundedBoxGeometry(0.18, 0.45, 0.92, 6, 0.065), primaryMat),
       'primary'
     );
     arm.position.set(x, 0.52, -0.01);
     group.add(arm);
   });
 
-  // 2 Accent Throw Pillows
-  const pillow1 = tagFabric(
-    new THREE.Mesh(new RoundedBoxGeometry(0.36, 0.34, 0.13, 6, 0.055), accentMat),
-    'accent'
-  );
-  pillow1.position.set(-0.84, 0.69, -0.02);
-  pillow1.rotation.set(-0.22, 0.35, 0.12);
+  // 2 Plush Accent Pillows (Rotated to look like throw pillows with center plumpness)
+  const pillowGeo = createPlumpCushionGeometry(0.36, 0.34, 0.12, 0.032, 0.018, 16);
+  const pillow1 = tagFabric(new THREE.Mesh(pillowGeo, accentMat), 'accent');
+  pillow1.position.set(-0.84, 0.7, -0.02);
+  pillow1.rotation.set(-0.24, 0.42, 0.14);
   group.add(pillow1);
 
-  const pillow2 = tagFabric(
-    new THREE.Mesh(new RoundedBoxGeometry(0.34, 0.32, 0.12, 6, 0.055), accentMat),
-    'accent'
-  );
-  pillow2.position.set(0.86, 0.68, 0.0);
-  pillow2.rotation.set(-0.2, -0.4, -0.1);
+  const pillow2 = tagFabric(new THREE.Mesh(pillowGeo, accentMat), 'accent');
+  pillow2.position.set(0.84, 0.69, 0.01);
+  pillow2.rotation.set(-0.2, -0.45, -0.12);
   group.add(pillow2);
 
-  // Draped Throw Blanket over the right seat corner & front edge
+  // Draped Throw Blanket over seat & front edge with realistic vertical ripples
   const blanketCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(0.45, 0.565, -0.12),
-    new THREE.Vector3(0.65, 0.565, 0.15),
-    new THREE.Vector3(0.75, 0.555, 0.41),
-    new THREE.Vector3(0.78, 0.42, 0.46),
-    new THREE.Vector3(0.76, 0.27, 0.465),
+    new THREE.Vector3(0.42, 0.59, -0.14),
+    new THREE.Vector3(0.58, 0.595, 0.14),
+    new THREE.Vector3(0.68, 0.57, 0.38),
+    new THREE.Vector3(0.71, 0.43, 0.445),
+    new THREE.Vector3(0.69, 0.25, 0.455),
   ]);
-  const blanketPoints = blanketCurve.getPoints(24);
-  const blanketShape = new THREE.Shape();
-  blanketShape.moveTo(-0.24, 0);
-  blanketShape.lineTo(0.24, 0);
-  blanketShape.lineTo(0.24, 0.018);
-  blanketShape.lineTo(-0.24, 0.018);
-  blanketShape.closePath();
-
-  const blanketGeo = new THREE.ExtrudeGeometry(blanketShape, {
-    steps: 28,
-    bevelEnabled: false,
-    extrudePath: blanketCurve,
-  });
-  // Rotate profile alignment cleanly via vertex normal or build simple ribbon mesh
-  blanketGeo.dispose();
-
-  // Custom curved ribbon mesh for blanket (clean UV mapping for fabric texture)
-  const width = 0.48;
-  const segU = 24;
-  const segV = 8;
+  const width = 0.52;
+  const segU = 32;
+  const segV = 16;
   const positions: number[] = [];
   const uvs: number[] = [];
   const indices: number[] = [];
@@ -241,9 +307,9 @@ export function buildSofaModel(
     const pt = blanketCurve.getPoint(t);
     for (let j = 0; j <= segV; j++) {
       const s = j / segV - 0.5;
-      const wave = Math.sin(s * Math.PI * 3 + t * 5) * 0.008;
-      positions.push(pt.x + s * width, pt.y + wave, pt.z);
-      uvs.push(s + 0.5, t * 2);
+      const ripple = Math.sin(s * Math.PI * 5 + t * 4) * 0.01 * (0.4 + t * 0.6);
+      positions.push(pt.x + s * width, pt.y + ripple, pt.z + ripple * 0.6);
+      uvs.push(s + 0.5, t * 2.2);
     }
   }
   for (let i = 0; i < segU; i++) {
@@ -261,15 +327,14 @@ export function buildSofaModel(
   ribbonGeo.computeVertexNormals();
 
   const blanketMesh = tagFabric(new THREE.Mesh(ribbonGeo, accentMat), 'accent');
-  blanketMesh.material = accentMat;
   group.add(blanketMesh);
 
   return group;
 }
 
 /**
- * 2. Detailed Lounge Armchair with wrap-around shell, tufted cushion,
- * tapered wooden legs, and lumbar pillow.
+ * 2. Sculpted Designer Lounge Armchair with diamond tufting, piped seat cushion,
+ * curved wings, solid oak frame, and lumbar pillow.
  */
 export function buildChairModel(
   primaryMat: THREE.Material,
@@ -279,7 +344,6 @@ export function buildChairModel(
   const woodMat = createWoodMaterial();
   const brassMat = createBrassMaterial();
 
-  // Angled legs
   const legs: [number, number, number, number][] = [
     [-0.36, 0.32, 0.14, 0.14],
     [0.36, 0.32, -0.14, 0.14],
@@ -294,13 +358,11 @@ export function buildChairModel(
     group.add(leg);
   });
 
-  // Wooden under-frame crossbars
   const basePlate = new THREE.Mesh(new RoundedBoxGeometry(0.76, 0.05, 0.72, 4, 0.015), woodMat);
   basePlate.position.set(0, 0.3, 0);
   basePlate.castShadow = true;
   group.add(basePlate);
 
-  // Upholstered seat bucket base
   const seatBase = tagFabric(
     new THREE.Mesh(new RoundedBoxGeometry(0.78, 0.12, 0.74, 6, 0.045), primaryMat),
     'primary'
@@ -308,52 +370,50 @@ export function buildChairModel(
   seatBase.position.set(0, 0.37, 0);
   group.add(seatBase);
 
-  // Plush Seat Cushion
-  const cushion = tagFabric(
-    new THREE.Mesh(new RoundedBoxGeometry(0.66, 0.14, 0.64, 6, 0.055), primaryMat),
-    'primary'
-  );
+  // Sculpted Plump Seat Cushion + Piping
+  const seatGeo = createPlumpCushionGeometry(0.66, 0.14, 0.64, 0.03, 0.012, 18);
+  const cushion = tagFabric(new THREE.Mesh(seatGeo, primaryMat), 'primary');
   cushion.position.set(0, 0.48, 0.04);
   group.add(cushion);
 
-  // Curved Wrap-around Backrest (3 angled segments forming ergonomic shell)
-  const backCenter = tagFabric(
-    new THREE.Mesh(new RoundedBoxGeometry(0.7, 0.56, 0.14, 6, 0.05), primaryMat),
-    'primary'
-  );
-  backCenter.position.set(0, 0.69, -0.31);
+  const piping = createPipingFrame(0.64, 0.62, 0.008, accentMat);
+  piping.position.set(0, 0.545, 0.04);
+  group.add(piping);
+
+  // Curved Backrest + Side Wings
+  const backGeo = createPlumpCushionGeometry(0.7, 0.56, 0.14, 0.025, 0.01, 16);
+  const backCenter = tagFabric(new THREE.Mesh(backGeo, primaryMat), 'primary');
+  backCenter.position.set(0, 0.7, -0.3);
   backCenter.rotation.x = -0.14;
   group.add(backCenter);
 
   [-0.36, 0.36].forEach((x, idx) => {
     const sideWing = tagFabric(
-      new THREE.Mesh(new RoundedBoxGeometry(0.14, 0.46, 0.56, 6, 0.05), primaryMat),
+      new THREE.Mesh(new RoundedBoxGeometry(0.14, 0.47, 0.56, 6, 0.05), primaryMat),
       'primary'
     );
-    sideWing.position.set(x, 0.61, -0.05);
-    sideWing.rotation.y = idx === 0 ? -0.12 : 0.12;
+    sideWing.position.set(x, 0.62, -0.04);
+    sideWing.rotation.y = idx === 0 ? -0.14 : 0.14;
     group.add(sideWing);
   });
 
-  // 4 Tufted Buttons on backrest
-  [-0.16, 0.16].forEach((x) => {
-    [0.62, 0.78].forEach((y) => {
+  // 6 Tufted Diamond Buttons
+  [-0.18, 0, 0.18].forEach((x) => {
+    [0.64, 0.8].forEach((y) => {
       const btn = tagFabric(
-        new THREE.Mesh(new THREE.SphereGeometry(0.016, 12, 12), accentMat),
+        new THREE.Mesh(new THREE.SphereGeometry(0.015, 12, 12), accentMat),
         'accent'
       );
-      btn.scale.set(1, 1, 0.5);
-      btn.position.set(x, y, -0.23 - (y - 0.62) * 0.14);
+      btn.scale.set(1, 1, 0.45);
+      btn.position.set(x, y, -0.22 - (y - 0.64) * 0.14);
       group.add(btn);
     });
   });
 
-  // Lumbar Accent Pillow
-  const lumbar = tagFabric(
-    new THREE.Mesh(new RoundedBoxGeometry(0.44, 0.24, 0.11, 6, 0.045), accentMat),
-    'accent'
-  );
-  lumbar.position.set(0, 0.62, -0.12);
+  // Accent Lumbar Pillow
+  const lumbarGeo = createPlumpCushionGeometry(0.45, 0.25, 0.11, 0.028, 0.014, 14);
+  const lumbar = tagFabric(new THREE.Mesh(lumbarGeo, accentMat), 'accent');
+  lumbar.position.set(0, 0.62, -0.11);
   lumbar.rotation.x = -0.22;
   group.add(lumbar);
 
@@ -361,8 +421,8 @@ export function buildChairModel(
 }
 
 /**
- * 3. Hotel Suite Bed with channel-tufted upholstered headboard,
- * crisp mattress, folded duvet, textured bed runner, and 4 pillows.
+ * 3. Luxury Hotel Suite Bed with 5-channel tufted headboard, crisp sheet,
+ * puffy folded duvet, runner, and 4 sculpted pillows.
  */
 export function buildBedModel(
   primaryMat: THREE.Material,
@@ -373,7 +433,6 @@ export function buildBedModel(
   const brassMat = createBrassMaterial();
   const sheetMat = createWhiteLinenMaterial();
 
-  // Legs
   [
     [-0.9, 0.95],
     [0.9, 0.95],
@@ -385,7 +444,7 @@ export function buildBedModel(
     group.add(leg);
   });
 
-  // Upholstered Bed Frame
+  // Upholstered Bed Frame + Wood Trim
   const frame = tagFabric(
     new THREE.Mesh(new RoundedBoxGeometry(1.94, 0.24, 2.08, 5, 0.04), primaryMat),
     'primary'
@@ -393,60 +452,61 @@ export function buildBedModel(
   frame.position.set(0, 0.26, 0);
   group.add(frame);
 
-  // Channel-tufted Headboard (5 vertical plush panels)
-  const headBack = new THREE.Mesh(new RoundedBoxGeometry(2.02, 1.1, 0.08, 4, 0.02), woodMat);
-  headBack.position.set(0, 0.72, -1.03);
+  // Oak surround on headboard
+  const headBack = new THREE.Mesh(new RoundedBoxGeometry(2.04, 1.12, 0.08, 4, 0.02), woodMat);
+  headBack.position.set(0, 0.73, -1.03);
   headBack.castShadow = true;
   group.add(headBack);
 
-  [-0.76, -0.38, 0, 0.38, 0.76].forEach((x) => {
-    const channel = tagFabric(
-      new THREE.Mesh(new RoundedBoxGeometry(0.36, 1.04, 0.11, 6, 0.045), primaryMat),
-      'primary'
-    );
-    channel.position.set(x, 0.72, -0.97);
+  // 7 Channel-tufted Soft Panels
+  for (let i = -3; i <= 3; i++) {
+    const x = i * 0.275;
+    const chGeo = createPlumpCushionGeometry(0.265, 1.04, 0.1, 0.02, 0.008, 12);
+    const channel = tagFabric(new THREE.Mesh(chGeo, primaryMat), 'primary');
+    channel.position.set(x, 0.73, -0.97);
     group.add(channel);
-  });
+  }
 
-  // Crisp White Mattress
+  // Crisp White Fitted Mattress
   const mattress = new THREE.Mesh(new RoundedBoxGeometry(1.8, 0.22, 1.94, 6, 0.05), sheetMat);
   mattress.position.set(0, 0.44, 0.03);
   mattress.castShadow = true;
   mattress.receiveShadow = true;
   group.add(mattress);
 
-  // Folded Duvet (covering lower 70% of bed)
-  const duvet = tagFabric(
-    new THREE.Mesh(new RoundedBoxGeometry(1.86, 0.12, 1.38, 6, 0.05), primaryMat),
-    'primary'
-  );
-  duvet.position.set(0, 0.54, 0.32);
+  // Folded Duvet with soft puffed center
+  const duvetGeo = createPlumpCushionGeometry(1.88, 0.12, 1.4, 0.03, 0.015, 22);
+  const duvet = tagFabric(new THREE.Mesh(duvetGeo, primaryMat), 'primary');
+  duvet.position.set(0, 0.55, 0.31);
   group.add(duvet);
 
+  // Turned-down top cuff of crisp white sheet / duvet fold
+  const cuff = new THREE.Mesh(new RoundedBoxGeometry(1.86, 0.08, 0.22, 6, 0.035), sheetMat);
+  cuff.position.set(0, 0.57, -0.34);
+  cuff.castShadow = true;
+  group.add(cuff);
+
   // Textured Bed Runner at Foot of Bed
-  const runner = tagFabric(
-    new THREE.Mesh(new RoundedBoxGeometry(1.9, 0.035, 0.46, 5, 0.015), accentMat),
-    'accent'
-  );
-  runner.position.set(0, 0.605, 0.68);
+  const runnerGeo = createPlumpCushionGeometry(1.92, 0.035, 0.48, 0.01, 0.004, 16);
+  const runner = tagFabric(new THREE.Mesh(runnerGeo, accentMat), 'accent');
+  runner.position.set(0, 0.62, 0.68);
   group.add(runner);
 
-  // 2 Large Sleeping Pillows
+  // 2 Crisp White Sleeping Pillows
+  const sleepGeo = createPlumpCushionGeometry(0.74, 0.14, 0.44, 0.038, 0.016, 16);
   [-0.44, 0.44].forEach((x) => {
-    const p = new THREE.Mesh(new RoundedBoxGeometry(0.72, 0.14, 0.42, 6, 0.06), sheetMat);
-    p.position.set(x, 0.61, -0.66);
+    const p = new THREE.Mesh(sleepGeo, sheetMat);
+    p.position.set(x, 0.62, -0.66);
     p.rotation.x = 0.28;
     p.castShadow = true;
     group.add(p);
   });
 
-  // 2 Accent Throw Pillows
+  // 2 Accent Throw Cushions
+  const throwGeo = createPlumpCushionGeometry(0.48, 0.34, 0.13, 0.03, 0.015, 16);
   [-0.4, 0.4].forEach((x) => {
-    const p = tagFabric(
-      new THREE.Mesh(new RoundedBoxGeometry(0.46, 0.32, 0.13, 6, 0.055), accentMat),
-      'accent'
-    );
-    p.position.set(x, 0.68, -0.46);
+    const p = tagFabric(new THREE.Mesh(throwGeo, accentMat), 'accent');
+    p.position.set(x, 0.69, -0.45);
     p.rotation.x = -0.25;
     group.add(p);
   });
@@ -455,7 +515,118 @@ export function buildBedModel(
 }
 
 /**
- * 4. Draped Curtain & Wholesale Fabric Roll Display
+ * 4. Dedicated Towel & Spa Bench Display (Slatted oak bench + stacked fluffy folded terry towels
+ * with woven dobby border + rolled spa towels + brass ring bands).
+ */
+export function buildTowelsModel(
+  primaryMat: THREE.Material,
+  accentMat: THREE.Material
+): THREE.Group {
+  const group = new THREE.Group();
+  const woodMat = createWoodMaterial();
+  const brassMat = createBrassMaterial();
+  const ceramicMat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color('#EAE5DC'),
+    roughness: 0.35,
+    metalness: 0.05,
+  });
+
+  // Slatted Solid Oak Spa Bench
+  [
+    [-0.48, 0.2],
+    [0.48, 0.2],
+    [-0.48, -0.2],
+    [0.48, -0.2],
+  ].forEach(([x, z]) => {
+    const leg = createTaperedLeg(0.26, 0.025, 0.018, woodMat, brassMat);
+    leg.position.set(x, 0, z);
+    group.add(leg);
+  });
+
+  // Bench Apron Frame
+  const apron = new THREE.Mesh(new RoundedBoxGeometry(1.06, 0.035, 0.48, 4, 0.01), woodMat);
+  apron.position.set(0, 0.26, 0);
+  apron.castShadow = true;
+  group.add(apron);
+
+  // 5 Wood Slats on Bench Top
+  for (let i = -2; i <= 2; i++) {
+    const slat = new THREE.Mesh(new RoundedBoxGeometry(1.12, 0.025, 0.085, 4, 0.008), woodMat);
+    slat.position.set(0, 0.29, i * 0.1);
+    slat.castShadow = true;
+    slat.receiveShadow = true;
+    group.add(slat);
+  }
+
+  // Stack of 3 Plush Folded Terry Towels (Left Side)
+  const towelW = 0.46;
+  const towelH = 0.085;
+  const towelD = 0.34;
+  [0, 1, 2].forEach((tier) => {
+    const y = 0.345 + tier * 0.082;
+    const mat = tier === 1 ? accentMat : primaryMat;
+    const role = tier === 1 ? 'accent' : 'primary';
+
+    const foldedGeo = createPlumpCushionGeometry(towelW, towelH, towelD, 0.018, 0.006, 16);
+    const towel = tagFabric(new THREE.Mesh(foldedGeo, mat), role);
+    towel.position.set(-0.22, y, 0);
+    towel.rotation.y = tier === 1 ? 0.04 : tier === 2 ? -0.03 : 0;
+    group.add(towel);
+
+    // Woven Dobby Border Band near front fold
+    const dobby = tagFabric(
+      new THREE.Mesh(new RoundedBoxGeometry(towelW - 0.02, 0.012, 0.045, 4, 0.004), tier === 1 ? primaryMat : accentMat),
+      tier === 1 ? 'primary' : 'accent'
+    );
+    dobby.position.set(-0.22, y + towelH / 2 + 0.006, 0.09);
+    dobby.rotation.y = towel.rotation.y;
+    group.add(dobby);
+  });
+
+  // 2 Rolled Spa Towels with Brass Ties (Right Front)
+  [
+    [0.24, 0.355, 0.09],
+    [0.24, 0.355, -0.07],
+  ].forEach(([x, y, z], idx) => {
+    const roll = tagFabric(
+      new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.062, 0.34, 28), idx === 0 ? primaryMat : accentMat),
+      idx === 0 ? 'primary' : 'accent'
+    );
+    roll.rotation.z = Math.PI / 2;
+    roll.position.set(x, y, z);
+    group.add(roll);
+
+    // Inner spiral core shadow effect
+    const hole = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.014, 0.014, 0.344, 16),
+      new THREE.MeshStandardMaterial({ color: '#475569', roughness: 0.9 })
+    );
+    hole.rotation.z = Math.PI / 2;
+    hole.position.set(x, y, z);
+    group.add(hole);
+
+    // Brass tie band
+    const band = new THREE.Mesh(new THREE.TorusGeometry(0.064, 0.005, 10, 28), brassMat);
+    band.rotation.y = Math.PI / 2;
+    band.position.set(x, y, z);
+    group.add(band);
+  });
+
+  // Minimalist Ceramic Spa Bottle Accent (Right Back)
+  const bottle = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.055, 0.16, 24), ceramicMat);
+  bottle.position.set(0.42, 0.38, -0.14);
+  bottle.castShadow = true;
+  group.add(bottle);
+
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.025, 0.04, 16), brassMat);
+  neck.position.set(0.42, 0.47, -0.14);
+  group.add(neck);
+
+  return group;
+}
+
+/**
+ * 5. Draped Curtain & Wholesale Fabric Roll Display
  */
 export function buildDrapeModel(
   primaryMat: THREE.Material,
@@ -465,7 +636,6 @@ export function buildDrapeModel(
   const brassMat = createBrassMaterial();
   const woodMat = createWoodMaterial();
 
-  // Minimalist display stand & brass rod
   const base = new THREE.Mesh(new RoundedBoxGeometry(1.7, 0.05, 0.7, 4, 0.015), woodMat);
   base.position.set(0, 0.025, 0);
   base.receiveShadow = true;
@@ -484,7 +654,6 @@ export function buildDrapeModel(
   rod.castShadow = true;
   group.add(rod);
 
-  // Curtain Rings
   for (let i = -5; i <= 5; i++) {
     const ring = new THREE.Mesh(new THREE.TorusGeometry(0.032, 0.005, 10, 20), brassMat);
     ring.rotation.y = Math.PI / 2;
@@ -492,9 +661,8 @@ export function buildDrapeModel(
     group.add(ring);
   }
 
-  // Flowing Sinusoidal Curtain Drape Mesh
-  const segX = 64;
-  const segY = 32;
+  const segX = 68;
+  const segY = 36;
   const width = 1.32;
   const height = 1.72;
   const positions: number[] = [];
@@ -502,14 +670,13 @@ export function buildDrapeModel(
   const indices: number[] = [];
 
   for (let iy = 0; iy <= segY; iy++) {
-    const v = iy / segY; // 0 bottom, 1 top
+    const v = iy / segY;
     const y = 0.1 + v * height;
-    // Slight widening flare near the bottom
     const flare = 1 + (1 - v) * 0.08;
     for (let ix = 0; ix <= segX; ix++) {
       const u = ix / segX;
       const x = (u - 0.5) * width * flare;
-      const fold = Math.sin(u * Math.PI * 10) * (0.045 + (1 - v) * 0.03);
+      const fold = Math.sin(u * Math.PI * 10) * (0.048 + (1 - v) * 0.032);
       const z = -0.15 + fold;
       positions.push(x, y, z);
       uvs.push(u * 2, v * 2.5);
@@ -529,11 +696,9 @@ export function buildDrapeModel(
   drapeGeo.setIndex(indices);
   drapeGeo.computeVertexNormals();
 
-  // Double-sided fabric material clone for drape
   const drapeMesh = tagFabric(new THREE.Mesh(drapeGeo, primaryMat), 'primary');
   group.add(drapeMesh);
 
-  // Wholesale Fabric Roll resting on the plinth
   const roll = tagFabric(
     new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 1.1, 32), accentMat),
     'accent'
@@ -542,7 +707,6 @@ export function buildDrapeModel(
   roll.position.set(0, 0.19, 0.16);
   group.add(roll);
 
-  // Cardboard core inside roll
   const core = new THREE.Mesh(
     new THREE.CylinderGeometry(0.038, 0.038, 1.16, 20),
     new THREE.MeshStandardMaterial({ color: '#A38B70', roughness: 0.9 })

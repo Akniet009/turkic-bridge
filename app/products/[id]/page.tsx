@@ -25,6 +25,7 @@ import { Product } from '@/lib/types';
 import { useTranslation } from '@/lib/i18n/context';
 import { formatUsd, formatKzt, convertUsdToKzt, calculateOrderSummary } from '@/lib/currency';
 import { EscrowBadge, VerifiedBadge, CommissionBadge } from '@/components/ui/TrustBadges';
+import { getProduct3DConfig } from '@/lib/three/productMapping';
 
 const Textile3DViewer = dynamic(
   () => import('@/components/three/Textile3DViewer').then((m) => m.Textile3DViewer),
@@ -87,6 +88,7 @@ export default function ProductDetailPage() {
   const supplier = product.supplier;
   const subtotalUsd = product.price_usd * orderQuantity;
   const summary = calculateOrderSummary(subtotalUsd, 120.0);
+  const threeConfig = getProduct3DConfig(product);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12">
@@ -121,49 +123,41 @@ export default function ProductDetailPage() {
               }`}
             >
               <Box className="w-3.5 h-3.5 text-teal-500" />
-              <span>3D-модель с текстурой</span>
+              <span>Смотреть в 3D</span>
             </button>
           </div>
 
           {viewMode === '3d' ? (
             <Textile3DViewer
               compact
-              initialModel={
-                product.category === 'bedding'
-                  ? 'bed'
-                  : product.category === 'plaids'
-                  ? 'sofa'
-                  : product.category === 'fabrics'
-                  ? 'drape'
-                  : 'chair'
-              }
-              initialWeave={
-                product.category === 'bedding'
-                  ? 'satin'
-                  : product.category === 'plaids'
-                  ? 'boucle'
-                  : product.category === 'fabrics'
-                  ? 'jacquard'
-                  : 'velvet'
-              }
-              initialColorId="ecru"
+              initialModel={threeConfig.model}
+              initialWeave={threeConfig.weave}
+              initialColorId={threeConfig.colorId}
             />
           ) : (
             <>
-              <div className="relative h-80 sm:h-[480px] rounded-2xl overflow-hidden bg-slate-100 border border-slate-200">
+              <div
+                onClick={() => setViewMode('3d')}
+                className="group/img relative h-80 sm:h-[480px] rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 cursor-pointer"
+                title="Нажмите, чтобы посмотреть этот товар в 3D"
+              >
                 <Image
                   src={product.images[activeImageIdx] || product.images[0]}
                   alt={title}
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 60vw"
-                  className="object-cover"
+                  className="object-cover group-hover/img:scale-102 transition-transform duration-500"
                 />
                 <div className="absolute top-4 left-4 flex gap-2">
                   <span className="bg-slate-900/90 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm">
                     MOQ: {product.moq} шт
                   </span>
                   {supplier?.verified && <VerifiedBadge />}
+                </div>
+                <div className="absolute bottom-4 right-4 bg-slate-900/85 hover:bg-slate-900 text-white text-xs font-semibold px-3.5 py-2 rounded-full backdrop-blur-md shadow-md flex items-center gap-1.5 transition-all">
+                  <Box className="w-4 h-4 text-teal-400" />
+                  <span>Открыть картинку в 3D</span>
                 </div>
               </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, RotateCcw, SlidersHorizontal, MapPin } from 'lucide-react';
+import { Search, Filter, RotateCcw, SlidersHorizontal, MapPin, Box } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/context';
 import { AppStore } from '@/lib/store';
 import { ProductCard } from '@/components/catalog/ProductCard';
@@ -96,9 +96,15 @@ export default function CatalogPage() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight">
             Оптовый каталог текстиля
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Прямые цены от турецких фабрик с расчетом партии в тенге и защитой Escrow
-          </p>
+          <div className="flex flex-wrap items-center gap-2 mt-1.5">
+            <p className="text-xs sm:text-sm text-slate-500">
+              Прямые цены от турецких фабрик с расчетом в тенге и защитой Escrow
+            </p>
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-teal-800 bg-teal-50 border border-teal-200/70 px-2.5 py-0.5 rounded-full">
+              <Box className="w-3 h-3 text-teal-600" />
+              <span>Нажмите «3D» на любой картинке товара</span>
+            </span>
+          </div>
         </div>
 
         {/* Search input */}
